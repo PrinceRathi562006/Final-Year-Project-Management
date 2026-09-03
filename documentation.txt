@@ -1,0 +1,14 @@
+Libraries used in Backend ->
+
+1. bcrypt -> password hash
+2. cloudinary -> not used
+3. cookie-parser 
+4. cors -> to connect to servers frontend and backend.
+5. dotenv 
+6. express 
+7. express-fileupload 
+8. express-rate-limit -> limit requests like clicking a button again and agian, it will stop that.
+9. jsonwebtoken 
+10. mongoose 
+11. multer -> file management
+12. nodemailer -> to send email

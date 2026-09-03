@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const {errorMiddleware} = require('./middlewares/error');
 const authRouter = require('./router/userRoute.js');
 
+
 const app = express();
 
 app.use(
