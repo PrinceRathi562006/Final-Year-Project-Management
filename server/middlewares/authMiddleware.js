@@ -1,22 +1,38 @@
-const jwt = require('jsonwebtoken');
-const asyncHandler = require('../middlewares/asyncHandler.js');
-const { ErrorHandler } = require('./error.js');
+const jwt = require("jsonwebtoken");
+const asyncHandler = require("../middlewares/asyncHandler.js");
+const { ErrorHandler } = require("./error.js");
 const User = require("../models/User.js");
 
-
 const isAuthenticated = asyncHandler(async (req, res, next) => {
-    const {token} = req.cookies;
-    if(!token) {
-        return next(new ErrorHandler("Please login to access this resource.", 401));
-    }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const { token } = req.cookies;
+  if (!token) {
+    return next(new ErrorHandler("Please login to access this resource.", 401));
+  }
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = await User.findById(decoded.id).select("-resetPasswordToken -resetPasswordExpires");
+  req.user = await User.findById(decoded.id).select(
+    "-resetPasswordToken -resetPasswordExpires",
+  );
 
-    if(!req.user){
-        return next(new ErrorHandler("User not found with this id.", 404));
-    }
-    next();
+  if (!req.user) {
+    return next(new ErrorHandler("User not found with this id.", 404));
+  }
+  next();
 });
 
-module.exports = isAuthenticated;
+const isAuthorized = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ErrorHandler(
+          `Role: ${req.user.role} is not allowed to access this resource`,
+          403,
+        ),
+      );
+    }
+
+    next();
+  };
+};
+
+module.exports = { isAuthenticated, isAuthorized };

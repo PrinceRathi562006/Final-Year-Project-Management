@@ -1,0 +1,58 @@
+@keyframes app-page-enter {
+  from { opacity: 0; transform: translate3d(0, 9px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes app-surface-enter {
+  from { opacity: 0; transform: translate3d(0, 6px, 0) scale(.992); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes app-modal-enter {
+  from { opacity: 0; transform: translate3d(0, 9px, 0) scale(.975); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes app-toast-enter {
+  from { opacity: 0; transform: translate3d(0, -8px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.app-page-transition { animation: app-page-enter 320ms cubic-bezier(.2, .75, .3, 1) both; }
+
+/* Shared tactile controls */
+.btn-primary, .btn-secondary, .btn-danger, .btn-outline {
+  transition: transform 170ms ease, box-shadow 170ms ease, background-color 170ms ease, border-color 170ms ease, filter 170ms ease;
+}
+
+.btn-primary:hover:not(:disabled), .btn-secondary:hover:not(:disabled), .btn-danger:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 16px rgb(35 55 98 / .14); }
+.btn-primary:active:not(:disabled), .btn-secondary:active:not(:disabled), .btn-danger:active:not(:disabled), .btn-outline:active:not(:disabled) { transform: scale(.985); }
+.btn-outline:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 13px rgb(35 55 98 / .08); }
+
+.input, .input-field {
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.input:hover:not(:disabled), .input-field:hover:not(:disabled) { border-color: #bdcbe4; }
+
+/* Data surfaces only: small, restrained lift and readable row feedback. */
+.app-page-transition > .card { animation: app-surface-enter 300ms cubic-bezier(.2, .75, .3, 1) both; }
+.app-page-transition > .card:nth-child(2) { animation-delay: 45ms; }
+.app-page-transition > .card:nth-child(3) { animation-delay: 90ms; }
+.app-page-transition table tbody tr { transition: background-color 180ms ease, box-shadow 180ms ease; }
+.app-page-transition table tbody tr:hover { box-shadow: inset 3px 0 0 #6d8ef1; }
+.app-page-transition table tbody tr { animation: app-surface-enter 260ms ease both; }
+.app-page-transition table tbody tr:nth-child(2) { animation-delay: 25ms; }
+.app-page-transition table tbody tr:nth-child(3) { animation-delay: 50ms; }
+.app-page-transition table tbody tr:nth-child(4) { animation-delay: 75ms; }
+.app-page-transition table tbody tr:nth-child(n + 5) { animation-delay: 95ms; }
+
+/* Modal and notification presentation hooks. */
+.app-modal-overlay { animation: app-modal-overlay-enter 210ms ease both; }
+@keyframes app-modal-overlay-enter { from { background-color: rgb(15 23 42 / 0); } to { background-color: rgb(15 23 42 / .48); } }
+.app-modal { animation: app-modal-enter 240ms cubic-bezier(.2, .75, .3, 1) both; }
+.Toastify__toast { border: 1px solid rgb(226 232 240 / .8); border-radius: 13px; box-shadow: 0 14px 32px rgb(20 34 61 / .18); }
+.Toastify__progress-bar { height: 3px; }
+
+@media (max-width: 640px) { .app-page-transition { animation-duration: 220ms; }.app-page-transition > .card { animation-delay: 0ms; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }

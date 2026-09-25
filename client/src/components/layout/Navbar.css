@@ -1,0 +1,59 @@
+.app-navbar {
+  height: 66px;
+  border-color: #e6ebf4;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 2px 12px rgba(34, 51, 83, .045);
+  backdrop-filter: blur(12px);
+}
+
+.app-navbar .app-navbar__inner { max-width: none; }
+.app-navbar .app-navbar__toggle {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid #e5eaf3;
+  border-radius: 11px;
+  background: #fbfcff;
+  color: #657188;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+.app-navbar .app-navbar__toggle:hover { border-color: #cfdbfa; background: #f2f6ff; box-shadow: 0 5px 12px rgba(49, 94, 234, .08); color: #3b60c8; transform: translateY(-1px); }
+.app-navbar .app-navbar__toggle:active { transform: scale(.96); }
+.app-navbar .app-navbar__toggle:focus-visible, .app-navbar .app-navbar__profile-trigger:focus-visible { outline: 3px solid rgba(49, 94, 234, .25); outline-offset: 2px; }
+
+.app-navbar .app-navbar__brand { position: relative; }
+.app-navbar .app-navbar__brand::before { position: absolute; left: -14px; width: 1px; height: 26px; background: #e7ebf2; content: ""; }
+.app-navbar .app-navbar__brand-mark { width: 36px; height: 36px; border: 1px solid rgba(47, 88, 210, .28); border-radius: 12px; background: linear-gradient(145deg, #416ff1, #274fc9); box-shadow: 0 8px 16px rgba(49, 94, 234, .19); }
+.app-navbar .app-navbar__brand-mark svg { width: 19px; height: 19px; }
+.app-navbar .app-navbar__brand-copy { display: grid; gap: 1px; }
+.app-navbar .app-navbar__brand-copy h1 { color: #25334d; font-size: .91rem; font-weight: 780; letter-spacing: -.02em; line-height: 1.2; }
+.app-navbar .app-navbar__brand-subtitle { color: #8792a6; font-size: .62rem; font-weight: 700; letter-spacing: .055em; text-transform: uppercase; }
+
+.app-navbar .app-navbar__actions { gap: 13px; }
+.app-navbar .app-navbar__profile-trigger { padding: 5px 7px 5px 5px; border: 1px solid transparent; border-radius: 13px; transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.app-navbar .app-navbar__profile-trigger:hover { border-color: #e1e7f2; background: #f8faff; box-shadow: 0 5px 14px rgba(36, 53, 86, .055); }
+.app-navbar .app-navbar__profile-trigger:active { transform: scale(.98); }
+.app-navbar .app-navbar__avatar { width: 34px; height: 34px; border: 2px solid #e1eaff; background: linear-gradient(145deg, #5379ee, #3155c9); box-shadow: 0 4px 10px rgba(49, 94, 234, .16); }
+.app-navbar .app-navbar__profile-copy { padding-right: 1px; text-align: left; }
+.app-navbar .app-navbar__profile-copy > p:first-child { color: #2a3750; font-weight: 750; line-height: 1.2; }
+.app-navbar .app-navbar__role { margin-top: 2px; color: #8490a3; font-size: .67rem; font-weight: 650; }
+.app-navbar .app-navbar__chevron { transition: transform 180ms ease, color 180ms ease; }
+.app-navbar .app-navbar__chevron.is-open { color: #4168d3; transform: rotate(180deg); }
+
+.app-navbar .app-navbar__profile-menu { overflow: hidden; margin-top: 10px; border: 1px solid #e2e8f2; border-radius: 15px; box-shadow: 0 17px 35px rgba(25, 43, 76, .14); }
+.app-navbar .app-navbar__profile-menu > div { padding: 8px; }
+.app-navbar .app-navbar__profile-menu > div > div { padding: 9px 10px 10px; border-color: #edf0f5; }
+.app-navbar .app-navbar__profile-menu p:first-child { color: #2d3b55; font-weight: 750; }
+.app-navbar .app-navbar__logout { border-radius: 9px; font-weight: 700; transition: background 160ms ease, transform 160ms ease; }
+.app-navbar .app-navbar__logout:hover { background: #fff1f0; transform: translateX(2px); }
+
+@media (max-width: 639px) {
+  .app-navbar .app-navbar__brand { margin-left: 12px; }
+  .app-navbar .app-navbar__brand::before { display: none; }
+  .app-navbar .app-navbar__actions { gap: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-navbar *, .app-navbar *::before, .app-navbar *::after { transition-duration: .01ms !important; }
+}

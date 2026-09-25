@@ -9,11 +9,11 @@ const {
     deleteUser
 } = require('../controllers/authController.js');
 const multer = require('multer');
-const isAuthenticated = require('../middlewares/authMiddleware.js');
+const {isAuthenticated, isAuthorized} = require('../middlewares/authMiddleware.js');
 
 const router = express.Router();
 
-router.post("/register", registerUser);
+router.post("/register", isAuthenticated, isAuthorized("Admin"), registerUser);
 router.post("/login", login);
 router.get("/me", isAuthenticated, getUser);
 router.post("/logout", isAuthenticated, logout);

@@ -11,8 +11,11 @@ const crypto = require('crypto');
 const registerUser = asyncHandler(async (req, res, next)=>{
     const { name, email, password, role } = req.body;
 
-    if(!name || !email || !password || !role){
+    if(!name || !email || !password){
         return next(new ErrorHandler("Please provide all required fields", 400));
+    }
+    if (role && role !== "Student") {
+        return next(new ErrorHandler("This endpoint can only create students", 400));
     }
 
     let user = await User.findOne({ email });
@@ -21,7 +24,7 @@ const registerUser = asyncHandler(async (req, res, next)=>{
         return next(new ErrorHandler("User already exists", 400));
     }
 
-    user = new User({ name, email, password, role });
+    user = new User({ name, email, password, role: "Student" });
     await user.save();
 
     generateToken(user, 201, "User Registered successfully", res);
