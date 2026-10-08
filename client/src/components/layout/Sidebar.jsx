@@ -1,7 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { Moon, Sun } from "lucide-react";
 import "./Sidebar.css";
 
-const Sidebar = ({ open, setOpen, userRole }) => {
+const Sidebar = ({ open, setOpen, userRole, theme = "light", onThemeToggle = () => {} }) => {
   const location = useLocation();
 
   const getNavigationItems = () => {
@@ -308,6 +309,7 @@ const Sidebar = ({ open, setOpen, userRole }) => {
     <>
       {/* Desktop Sidebar */}
       <aside
+        data-theme={theme}
         className={`app-sidebar fixed -left-full lg:left-0 top-16 h-[calc(100vh-4rem)] bg-white border-r border-slate-200 transition-all duration-300 z-30 ${open ? "w-64 is-expanded" : "w-20 is-collapsed"
           }`}
       >
@@ -365,6 +367,10 @@ const Sidebar = ({ open, setOpen, userRole }) => {
 
           {/* Sidebar footer */}
           <div className="sidebar-footer p-4 border-t border-slate-200">
+            <button type="button" className="sidebar-theme-toggle" onClick={onThemeToggle} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}>
+              {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+              <span className={open ? "" : "sidebar-theme-toggle__label--hidden"}>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+            </button>
             <div
               className={`sidebar-footer__content transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0 lg:opacity-0"
                 } ${open ? "block" : "hidden lg:hidden"}`}
@@ -431,6 +437,7 @@ const Sidebar = ({ open, setOpen, userRole }) => {
 
       {/* Mobile Sidebar Drawer */}
       <aside
+        data-theme={theme}
         className={`app-sidebar app-sidebar--mobile fixed inset-y-0 left-0 w-64 bg-white z-50 lg:hidden transform transition-transform duration-300 ${open ? "translate-x-0 is-expanded" : "-translate-x-full"
           }`}
       >
@@ -476,6 +483,10 @@ const Sidebar = ({ open, setOpen, userRole }) => {
 
           {/* Mobile footer */}
           <div className="sidebar-footer p-4 border-t border-slate-200">
+            <button type="button" className="sidebar-theme-toggle" onClick={onThemeToggle} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}>
+              {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+              <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+            </button>
             <div className="sidebar-footer__content">
               <span className="sidebar-footer__pulse" aria-hidden="true" />
               <p className="text-xs text-slate-500">Educational Project Management</p>

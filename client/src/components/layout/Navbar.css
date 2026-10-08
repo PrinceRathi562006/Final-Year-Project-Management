@@ -57,3 +57,56 @@
 @media (prefers-reduced-motion: reduce) {
   .app-navbar *, .app-navbar *::before, .app-navbar *::after { transition-duration: .01ms !important; }
 }
+
+.app-navbar .app-navbar__datetime { display:flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid #e7ebf3;border-radius:11px;background:rgba(249,251,255,.85); }
+.app-navbar .app-navbar__datetime-icon { display:grid;width:29px;height:29px;place-items:center;border:1px solid #e0e8ff;border-radius:9px;background:linear-gradient(145deg,#eef3ff,#f5efff);color:#5c70db; }
+.app-navbar .app-navbar__datetime-icon svg { width:15px;height:15px; }
+.app-navbar .app-navbar__datetime-copy { display:grid;gap:2px; }
+.app-navbar .app-navbar__datetime-copy strong { color:#4e5f7c;font-size:.65rem;font-weight:750;white-space:nowrap; }
+.app-navbar .app-navbar__datetime-copy small { color:#8d99af;font-size:.61rem;font-weight:650; }
+.app-navbar .app-navbar__datetime { margin-right:0; }
+[data-theme="dark"] .app-navbar { border-color:rgba(137,166,229,.2);background:rgba(7,20,47,.93);box-shadow:0 3px 18px rgba(1,8,25,.3); }
+[data-theme="dark"] .app-navbar .app-navbar__toggle { border-color:rgba(144,173,234,.2);background:rgba(46,68,119,.45);color:#c1d2f3; }
+[data-theme="dark"] .app-navbar .app-navbar__toggle:hover { border-color:rgba(140,177,255,.4);background:rgba(62,91,157,.56);color:#fff; }
+[data-theme="dark"] .app-navbar .app-navbar__brand::before { background:rgba(158,181,225,.22); }
+[data-theme="dark"] .app-navbar .app-navbar__brand-copy h1 { color:#eef3ff; }
+[data-theme="dark"] .app-navbar .app-navbar__brand-subtitle { color:#9fb3d9; }
+[data-theme="dark"] .app-navbar .app-navbar__profile-trigger:hover { border-color:rgba(143,172,232,.2);background:rgba(48,69,119,.46); }
+[data-theme="dark"] .app-navbar .app-navbar__profile-copy>p:first-child { color:#eef3ff; }
+[data-theme="dark"] .app-navbar .app-navbar__role { color:#a6b8d8; }
+[data-theme="dark"] .app-navbar .app-navbar__chevron { color:#a8bae0; }
+[data-theme="dark"] .app-navbar .app-navbar__datetime { border-color:rgba(141,170,232,.2);background:rgba(42,62,108,.54); }
+[data-theme="dark"] .app-navbar .app-navbar__datetime-icon { border-color:rgba(124,163,255,.25);background:linear-gradient(145deg,rgba(52,90,163,.6),rgba(90,58,150,.45));color:#a9c9ff; }
+[data-theme="dark"] .app-navbar .app-navbar__datetime-copy strong { color:#d8e4fb; }
+[data-theme="dark"] .app-navbar .app-navbar__datetime-copy small { color:#9fb4da; }
+[data-theme="dark"] .app-navbar .app-navbar__profile-menu { border-color:rgba(139,168,226,.24);background:#10254b; }
+[data-theme="dark"] .app-navbar .app-navbar__profile-menu > div > div { border-color:rgba(158,184,228,.15); }
+[data-theme="dark"] .app-navbar .app-navbar__profile-menu p:first-child { color:#eef3ff; }
+[data-theme="dark"] .app-navbar .app-navbar__profile-menu p { color:#aebfe0; }
+@media (max-width:639px) {
+  .app-navbar .app-navbar__brand-copy { display:none; }
+  .app-navbar .app-navbar__inner > .flex { gap:6px; }
+  .app-navbar .app-navbar__inner > .flex > .flex.items-center:first-child { min-width:0;flex:1 1 auto; }
+  .app-navbar .app-navbar__brand { min-width:0;flex:0 0 auto;margin-left:8px; }
+  .app-navbar .app-navbar__actions { min-width:0;flex:0 0 auto;gap:5px; }
+  .app-navbar .app-navbar__actions > .relative { margin-left:0; }
+  .app-navbar .app-navbar__profile-copy { display:none; }
+  .app-navbar .app-navbar__profile-trigger { gap:5px; }
+  .app-navbar .app-navbar__datetime { gap:5px;padding:4px 6px;margin-right:0; }
+  .app-navbar .app-navbar__datetime-icon { width:27px;height:27px; }
+  .app-navbar .app-navbar__datetime-copy strong { font-size:.56rem; }
+  .app-navbar .app-navbar__datetime-copy small { font-size:.54rem; }
+}
+
+@media (min-width:640px) and (max-width:899px) {
+  .app-navbar .app-navbar__inner > .flex { gap:8px; }
+  .app-navbar .app-navbar__inner > .flex > .flex.items-center:first-child { min-width:0;flex:1 1 auto; }
+  .app-navbar .app-navbar__brand { min-width:0;flex:0 1 auto;margin-left:9px; }
+  .app-navbar .app-navbar__brand-copy { min-width:0;max-width:clamp(130px,calc(100vw - 470px),230px); }
+  .app-navbar .app-navbar__brand-copy h1 { overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82rem; }
+  .app-navbar .app-navbar__actions { min-width:0;flex:0 0 auto;gap:7px; }
+  .app-navbar .app-navbar__actions > .relative { margin-left:0; }
+  .app-navbar .app-navbar__datetime { flex:none;padding:4px 7px; }
+  .app-navbar .app-navbar__datetime-copy strong { font-size:.59rem; }
+  .app-navbar .app-navbar__profile-copy { display:none; }
+}

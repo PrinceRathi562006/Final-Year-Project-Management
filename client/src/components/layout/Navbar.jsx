@@ -1,16 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { CalendarDays } from "lucide-react";
 import { logout } from "../../store/slices/authSlice";
 import "./Navbar.css";
 
 const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(() => new Date());
   const { authUser } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setCurrentTime(new Date()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const currentDateLabel = new Intl.DateTimeFormat(undefined, {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(currentTime);
+  const currentTimeLabel = new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(currentTime);
 
   const handleLogout = async () => {
     try {
@@ -101,6 +119,10 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
 
           {/* Right side */}
           <div className="app-navbar__actions flex items-center space-x-4">
+            <div className="app-navbar__datetime" aria-label={`Current date and time: ${currentDateLabel}, ${currentTimeLabel}`}>
+              <span className="app-navbar__datetime-icon"><CalendarDays aria-hidden="true" /></span>
+              <span className="app-navbar__datetime-copy"><strong>{currentDateLabel}</strong><small>{currentTimeLabel}</small></span>
+            </div>
             {/* Profile dropdown */}
             <div className="relative">
               <button

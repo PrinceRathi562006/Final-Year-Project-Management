@@ -46,7 +46,7 @@ export const createTeacher = createAsyncThunk("createTeacher", async (data, thun
   try {
     const res = await axiosInstance.post("/admin/create-teacher", data);
     toast.success(res.data.message || "Teacher Created Successfully");
-    return res.data.data.users
+    return res.data.data.user
   } catch (error){
     toast.error(
       error.response?.data?.message || "Failed to create Teacher"
@@ -59,7 +59,7 @@ export const updateTeacher = createAsyncThunk("updateTeacher", async ({id, data}
   try {
     const res = await axiosInstance.put(`/admin/update-teacher/${id}`, data);
     toast.success(res.data.message || "Teacher Updated Successfully");
-    return res.data.data.users
+    return res.data.data.user
   } catch (error){
     toast.error(
       error.response?.data?.message || "Failed to update Teacher"
