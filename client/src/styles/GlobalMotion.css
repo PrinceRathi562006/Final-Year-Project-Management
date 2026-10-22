@@ -54,5 +54,29 @@
 .Toastify__toast { border: 1px solid rgb(226 232 240 / .8); border-radius: 13px; box-shadow: 0 14px 32px rgb(20 34 61 / .18); }
 .Toastify__progress-bar { height: 3px; }
 
+/* Bow and arrow click feedback for the admin directory and assignment screens. */
+.bow-shot-layer { position: fixed; inset: 0; z-index: 10000; pointer-events: none; overflow: hidden; }
+.bow-shot-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.bow-shot-target { fill: rgb(239 68 68 / .09); stroke: #fb5264; stroke-width: 2.5; stroke-dasharray: 6 4; transform-origin: center; filter: drop-shadow(0 2px 7px rgb(225 29 72 / .35)); animation: bow-target-lock 650ms ease-out both; }
+.bow-shot-target-center { fill: #fb5264; filter: drop-shadow(0 1px 4px rgb(225 29 72 / .55)); animation: bow-target-lock 650ms ease-out both; }
+.bow-shot-target.is-large { stroke-width: 3; stroke-dasharray: 8 5; }
+.bow-shot-target-center.is-large { filter: drop-shadow(0 2px 7px rgb(225 29 72 / .65)); }
+.bow-shot-bow { fill: none; stroke: #8b5a2b; stroke-width: 6; stroke-linecap: round; filter: drop-shadow(0 2px 3px rgb(15 23 42 / .2)); animation: bow-draw 650ms ease-out both; }
+.bow-shot-bow.is-large { stroke: #70451f; stroke-width: 9; }
+.bow-shot-string { stroke: #d6b77a; stroke-width: 1.5; animation: bow-string-pull 650ms ease-out both; }
+.bow-shot-string.is-large { stroke: #f4d58d; stroke-width: 2; }
+.bow-shot-arrow { position: absolute; width: 38px; height: 4px; transform: rotate(var(--shot-angle)); transform-origin: 0 50%; animation: bow-arrow-flight 720ms cubic-bezier(.18,.72,.26,1) 700ms both; }
+.bow-shot-arrow.is-large { width: 55px; height: 6px; filter: drop-shadow(0 2px 3px rgb(15 23 42 / .28)); }
+.bow-shot-shaft { position: absolute; left: 0; top: 1px; width: 32px; height: 2px; background: #49331f; border-radius: 2px; }
+.bow-shot-arrow.is-large .bow-shot-shaft { top: 2px; width: 48px; height: 3px; background: linear-gradient(90deg, #70451f, #352719); }
+.bow-shot-head { position: absolute; right: 8px; top: -2px; width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-left: 8px solid #334155; }
+.bow-shot-arrow.is-large .bow-shot-head { top: -4px; right: 14px; border-top-width: 7px; border-bottom-width: 7px; border-left-width: 14px; border-left-color: #c14438; }
+.bow-shot-feather { position: absolute; left: -1px; top: -3px; width: 7px; height: 4px; background: #ef4444; border-radius: 5px 0 5px 0; }
+.bow-shot-arrow.is-large .bow-shot-feather { left: -2px; top: -5px; width: 12px; height: 7px; background: #e34d52; }
+@keyframes bow-target-lock { 0% { opacity: 0; scale: .35; } 45% { opacity: 1; scale: 1.2; } 100% { opacity: .88; scale: 1; } }
+@keyframes bow-draw { 0%, 100% { stroke-width: 6; } 55% { stroke-width: 7; } }
+@keyframes bow-string-pull { 0%, 100% { opacity: .65; } 55% { opacity: 1; } }
+@keyframes bow-arrow-flight { from { transform: rotate(var(--shot-angle)); } to { transform: translate(var(--flight-x), var(--flight-y)) rotate(var(--shot-angle)); } }
+
 @media (max-width: 640px) { .app-page-transition { animation-duration: 220ms; }.app-page-transition > .card { animation-delay: 0ms; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }

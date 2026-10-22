@@ -7,6 +7,7 @@ const {
   updateTeacher,
   createTeacher,
   getAllUsers,
+  assignSupervisor,
 } = require("../controllers/adminController.js");
 // const multer = require("multer");
 const {
@@ -63,6 +64,13 @@ router.get(
   isAuthenticated,
   isAuthorized("Admin"),
   getAllUsers,
+);
+
+router.put(
+  "/assign-supervisor/:studentId",
+  isAuthenticated,
+  isAuthorized("Admin"),
+  assignSupervisor,
 );
 
 module.exports = router;

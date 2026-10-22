@@ -93,6 +93,18 @@ export const getAllUsers = createAsyncThunk("getAllUsers", async (id, thunkAPI) 
   }
 });
 
+export const assignSupervisor = createAsyncThunk("assignSupervisor", async ({ studentId, supervisorId }, thunkAPI) => {
+  try {
+    const res = await axiosInstance.put(`/admin/assign-supervisor/${studentId}`, { supervisorId: supervisorId || null });
+    toast.success(res.data.message || "Supervisor assignment updated");
+    return res.data.data;
+  } catch (error) {
+    const message = error.response?.data?.message || "Failed to update supervisor assignment";
+    toast.error(message);
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
@@ -119,6 +131,15 @@ const adminSlice = createSlice({
     .addCase(getAllUsers.fulfilled, (state, action) => {
       state.users = action.payload.users;
     })
+    .addCase(assignSupervisor.fulfilled, (state, action) => {
+      const { student, teacher, previousTeacher } = action.payload;
+      state.users = state.users.map((user) => {
+        if (user._id === student._id) return { ...user, ...student };
+        if (teacher && user._id === teacher._id) return { ...user, ...teacher };
+        if (previousTeacher && user._id === previousTeacher._id) return { ...user, ...previousTeacher };
+        return user;
+      });
+    })
     .addCase(createTeacher.fulfilled, (state, action) => {
       if(state.users) state.users.unshift(action.payload);
     })
@@ -128,7 +149,14 @@ const adminSlice = createSlice({
       }
     })
     .addCase(deleteTeacher.fulfilled, (state, action) => {
-      if(state.users) state.users = state.users.filter( (u) => u._id !== action.payload )
+      if (state.users) {
+        state.users = state.users
+          .filter((user) => user._id !== action.payload)
+          .map((user) => {
+            const supervisorId = typeof user.supervisor === "object" ? user.supervisor?._id : user.supervisor;
+            return supervisorId === action.payload ? { ...user, supervisor: null } : user;
+          });
+      }
     })
   }
 });

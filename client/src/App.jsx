@@ -34,6 +34,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./store/slices/authSlice";
 import { ToastContainer } from "react-toastify";
 import { Loader } from "lucide-react";
+import BowArrowClickEffect from "./components/BowArrowClickEffect";
 
 const App = () => {
   const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
@@ -78,6 +79,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <BowArrowClickEffect />
       <Routes>
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage />}></Route>

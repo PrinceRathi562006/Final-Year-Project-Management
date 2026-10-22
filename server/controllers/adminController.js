@@ -1,6 +1,7 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const { ErrorHandler } = require("../middlewares/error");
 const userServices = require("../services/userServices");
+const mongoose = require("mongoose");
 
 const createStudent = asyncHandler(async (req, res, next) => {
   const { name, email, password, department } = req.body;
@@ -156,7 +157,24 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
     });
 });
 
-const assignSupervisor = asyncHandler(async (req, res, next) => {});
+const assignSupervisor = asyncHandler(async (req, res, next) => {
+  const { studentId } = req.params;
+  const { supervisorId } = req.body;
+
+  if (!mongoose.isValidObjectId(studentId)) {
+    return next(new ErrorHandler("Please provide a valid student ID", 400));
+  }
+  if (supervisorId && !mongoose.isValidObjectId(supervisorId)) {
+    return next(new ErrorHandler("Please provide a valid supervisor ID", 400));
+  }
+
+  const result = await userServices.assignSupervisor(studentId, supervisorId || null);
+  res.status(200).json({
+    success: true,
+    message: supervisorId ? "Supervisor assigned successfully" : "Supervisor removed successfully",
+    data: result,
+  });
+});
 const getAllProject = asyncHandler(async (req, res, next) => {});
 const getDashboardStats = asyncHandler(async (req, res, next) => {});
 
