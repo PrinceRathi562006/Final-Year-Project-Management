@@ -45,11 +45,14 @@ function SketchbookScene({ hovered, setHovered }) {
   const book = useRef();
   const pointer = useRef({ x: 0, y: 0 });
   useFrame(({ pointer: p }, delta) => {
+    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const scrollProgress = Math.min(1, window.scrollY / maxScroll);
     pointer.current.x += (p.x - pointer.current.x) * Math.min(1, delta * 1.6);
     pointer.current.y += (p.y - pointer.current.y) * Math.min(1, delta * 1.6);
     if (book.current) {
-      book.current.rotation.y += (pointer.current.x * 0.09 - book.current.rotation.y) * Math.min(1, delta * 2);
-      book.current.rotation.x += (-pointer.current.y * 0.055 - book.current.rotation.x) * Math.min(1, delta * 2);
+      book.current.rotation.y += (pointer.current.x * 0.09 + scrollProgress * 0.22 - book.current.rotation.y) * Math.min(1, delta * 2);
+      book.current.rotation.x += (-pointer.current.y * 0.055 + scrollProgress * 0.1 - book.current.rotation.x) * Math.min(1, delta * 2);
+      book.current.position.y += ((-0.03 - scrollProgress * 0.38) - book.current.position.y) * Math.min(1, delta * 2);
     }
   });
   return <>
