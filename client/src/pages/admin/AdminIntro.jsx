@@ -79,7 +79,7 @@ const AdminIntro = ({ onFinish, reducedMotion }) => {
       <div className="admin-intro__atmosphere" aria-hidden="true" />
       <div className="admin-intro__grid" aria-hidden="true" />
       <div className="admin-intro__stars" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /></div>
-      <button className="admin-intro__skip" type="button" onClick={finish}>Skip intro <ArrowRight aria-hidden="true" /></button>
+      <button className="admin-intro__skip" type="button" data-no-arrow-animation onClick={finish}>Skip intro <ArrowRight aria-hidden="true" /></button>
 
       <div className="admin-intro__layout">
         <Motion.div className="admin-intro__copy" initial={{ opacity: 0, x: -34 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9, delay: 0.65, ease: [0.2, 0.75, 0.3, 1] }}>
@@ -87,7 +87,7 @@ const AdminIntro = ({ onFinish, reducedMotion }) => {
           <Motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.85, delay: 0.95 }}>Turn ideas<br />into <span>impact.</span></Motion.h1>
           <Motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.35 }}>Bring projects, people and progress together in one focused academic workspace.</Motion.p>
           <Motion.div className={`admin-intro__actions${showWelcome ? " is-ready" : ""}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: showWelcome ? 1 : 0, y: showWelcome ? 0 : 12 }} transition={{ duration: 0.5 }}>
-            <button className="admin-intro__enter" type="button" onClick={finish}>Enter workspace <ArrowRight aria-hidden="true" /></button>
+            <button className="admin-intro__enter" type="button" data-no-arrow-animation onClick={finish}>Enter workspace <ArrowRight aria-hidden="true" /></button>
             <span><i /> Private admin portal</span>
           </Motion.div>
         </Motion.div>
