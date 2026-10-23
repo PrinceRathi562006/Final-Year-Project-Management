@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useOutletContext } from "react-router-dom";
 import { AnimatePresence, motion as Motion, MotionConfig } from "framer-motion";
@@ -86,7 +86,7 @@ const ManageStudents = () => {
   const [pageSize, setPageSize] = useState(10);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState(null);`r`n  const [previewMinimized, setPreviewMinimized] = useState(false);`r`n  const [previewMaximized, setPreviewMaximized] = useState(false);`r`n  const [previewOrigin, setPreviewOrigin] = useState(null);`r`n  const previewRef = useRef(null);`r`n  const dockRef = useRef(null);`r`n  const restoreMaximizedRef = useRef(false);
   const [isLoadingStudents, setIsLoadingStudents] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", department: "" });
@@ -114,7 +114,7 @@ const ManageStudents = () => {
       if (event.key === "Escape") {
         setShowModal(false);
         setShowDeleteModal(false);
-        setSelectedStudent(null);
+        if (previewMinimized) setPreviewMinimized(false);`r`n        else setSelectedStudent(null);
       }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
