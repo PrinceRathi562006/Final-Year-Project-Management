@@ -4,6 +4,7 @@ const User = require('../models/User');
 const generateForgotPasswordEmailTemplate = require("../utils/emailTemplates");
 const sendEmail = require("../services/emailService");
 const generateToken = require('../utils/generateToken');
+const { getAuthCookieOptions } = require('../utils/generateToken');
 const crypto = require('crypto');
 
 // Register User
@@ -27,7 +28,7 @@ const registerUser = asyncHandler(async (req, res, next)=>{
     user = new User({ name, email, password, role: "Student" });
     await user.save();
 
-    generateToken(user, 201, "User Registered successfully", res);
+    generateToken(user, 201, "User Registered successfully", res, req);
 });
 
 const login = asyncHandler(async (req, res, next) => {
@@ -44,7 +45,7 @@ const login = asyncHandler(async (req, res, next) => {
     if(!isPasswordMatched){
         return next(new ErrorHandler("Invalid email, password or role", 401))
     }
-    generateToken(user, 200, "Logged in successfully", res);
+    generateToken(user, 200, "Logged in successfully", res, req);
 });
 
 const getUser = asyncHandler(async (req, res, next) => {
@@ -57,12 +58,7 @@ const getUser = asyncHandler(async (req, res, next) => {
 });
 
 const logout = asyncHandler(async (req, res, next) => {
-    res.status(200).cookie("token", "",{
-        expires: new Date(
-            Date.now()
-        ),
-        httpOnly: true,
-    }).json({
+    res.status(200).clearCookie("token", getAuthCookieOptions(req)).json({
         success: true,
         message: "Logged out successfully",
     })
@@ -128,7 +124,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
     await user.save();
 
-    generateToken(user, 200, "Password reset successful", res);
+    generateToken(user, 200, "Password reset successful", res, req);
 });
 
 const deleteUser = asyncHandler(async (req, res, next) => {
