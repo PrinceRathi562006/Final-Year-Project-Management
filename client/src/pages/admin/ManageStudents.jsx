@@ -123,7 +123,7 @@ const ManageStudents = () => {
         setShowModal(false);
         setShowDeleteModal(false);
         if (previewMinimized) setPreviewMinimized(false);
-        else setSelectedStudent(null);
+        else closePreview();
       }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -132,8 +132,29 @@ const ManageStudents = () => {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [previewMinimized]);
 
+  const getDockOrigin = () => {
+    const panel = previewRef.current?.getBoundingClientRect();
+    const dock = dockRef.current?.getBoundingClientRect();
+    if (!panel || !dock) return null;
+    return { x: dock.left + dock.width / 2 - (panel.left + panel.width / 2), y: dock.top + dock.height / 2 - (panel.top + panel.height / 2) };
+  };
+  const minimizePreview = () => {
+    setPreviewOrigin(getDockOrigin());
+    restoreMaximizedRef.current = previewMaximized;
+    setPreviewMaximized(false);
+    setPreviewMinimized(true);
+  };
+  const restorePreview = () => {
+    setPreviewMinimized(false);
+    setPreviewMaximized(restoreMaximizedRef.current);
+  };
+  const closePreview = () => {
+    setPreviewMinimized(false);
+    setPreviewMaximized(false);
+    setSelectedStudent(null);
+  };
   const students = useMemo(() => {
     const studentUsers = (users || []).filter((user) => user.role?.toLowerCase() === "student");
     return studentUsers.map((student) => {
