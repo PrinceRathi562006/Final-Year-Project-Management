@@ -78,3 +78,6 @@
   .admin-workspace-page .mt-detail { padding:16px 16px 18px; }
   .admin-workspace-page .ms-window__titlebar { gap:8px;font-size:8px; }
 }
+
+/* Do not let scroll-reveal state hide route content on touch screens. */
+@media(max-width:1000px){.admin-workspace-page .is-depth-pending,.admin-workspace-page .is-depth-visible{opacity:1!important;transform:none!important;transition:none!important}}

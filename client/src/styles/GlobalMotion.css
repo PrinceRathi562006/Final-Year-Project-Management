@@ -83,3 +83,6 @@
 
 @media (max-width: 640px) { .app-page-transition { animation-duration: 220ms; }.app-page-transition > .card { animation-delay: 0ms; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }.route-loading__icon { animation:none; } }
+
+.route-loading--inline { min-height:calc(100vh - 98px); }
+@media(max-width:640px){.route-loading--inline{min-height:calc(100svh - 96px);padding:24px 14px;text-align:center}}

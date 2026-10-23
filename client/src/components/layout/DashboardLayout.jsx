@@ -36,6 +36,11 @@ const DashboardLayout = ({ userRole }) => {
   }, [theme]);
 
   useEffect(() => {
+    if (!useAdminFrame) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname, useAdminFrame]);
+
+  useEffect(() => {
     if (!isAdminWorkspace || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches || !window.IntersectionObserver) return undefined;
     const root = document.querySelector(".admin-workspace-page");
     if (!root) return undefined;
@@ -105,9 +110,11 @@ const DashboardLayout = ({ userRole }) => {
           className={isAdminLanding ? "admin-landing-main" : isAdminWorkspace ? "admin-workspace-main" : `min-w-0 flex-1 transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"}`}
         >
           <div className={useAdminFrame ? (isAdminLanding ? "admin-landing-page" : "admin-workspace-page") : "min-w-0 w-full p-6"}>
-            <div className="app-page-transition" key={location.pathname}>
-              <Outlet context={{ theme: activeTheme, setTheme }} />
-            </div>
+            <Suspense fallback={<div className="route-loading route-loading--inline" role="status" aria-live="polite"><span className="route-loading__icon" aria-hidden="true" /><span>Opening this section…</span></div>}>
+              <div className="app-page-transition" key={location.pathname}>
+                <Outlet context={{ theme: activeTheme, setTheme }} />
+              </div>
+            </Suspense>
           </div>
         </main>
       </div>
