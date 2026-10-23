@@ -1,35 +1,23 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 
 // Auth Pages
-import LoginPage from "./pages/auth/LoginPage";
-import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
+const ForgotPasswordPage = lazy(() => import("./pages/auth/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("./pages/auth/ResetPasswordPage"));
 
 // Dashboard Layouts
 import DashboardLayout from "./components/layout/DashboardLayout";
 
 // Student Pages
-import StudentDashboard from "./pages/student/StudentDashboard";
-import SubmitProposal from "./pages/student/SubmitProposal";
-import UploadFiles from "./pages/student/UploadFiles";
-import SupervisorPage from "./pages/student/SupervisorPage";
-import FeedbackPage from "./pages/student/FeedbackPage";
-import NotificationsPage from "./pages/student/NotificationsPage";
-
 // Teacher Pages
-import TeacherDashboard from "./pages/teacher/TeacherDashboard";
-import PendingRequests from "./pages/teacher/PendingRequests";
-import AssignedStudents from "./pages/teacher/AssignedStudents";
-import TeacherFiles from "./pages/teacher/TeacherFiles";
-
 // Admin Pages
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import ManageStudents from "./pages/admin/ManageStudents";
-import ManageTeachers from "./pages/admin/ManageTeachers";
-import AssignSupervisor from "./pages/admin/AssignSupervisor";
-import DeadlinesPage from "./pages/admin/DeadlinesPage";
-import ProjectsPage from "./pages/admin/ProjectsPage";
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const ManageStudents = lazy(() => import("./pages/admin/ManageStudents"));
+const ManageTeachers = lazy(() => import("./pages/admin/ManageTeachers"));
+const AssignSupervisor = lazy(() => import("./pages/admin/AssignSupervisor"));
+const DeadlinesPage = lazy(() => import("./pages/admin/DeadlinesPage"));
+const ProjectsPage = lazy(() => import("./pages/admin/ProjectsPage"));
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./store/slices/authSlice";
 import { ToastContainer } from "react-toastify";
@@ -80,6 +68,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <BowArrowClickEffect />
+      <Suspense fallback={<div className="route-loading" role="status" aria-live="polite"><Loader className="route-loading__icon" aria-hidden="true" /><span>Opening workspace…</span></div>}>
       <Routes>
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage />}></Route>
@@ -104,6 +93,7 @@ const App = () => {
         </Route>
 
       </Routes>
+      </Suspense>
       <ToastContainer
         theme="dark"
         autoClose={2500}

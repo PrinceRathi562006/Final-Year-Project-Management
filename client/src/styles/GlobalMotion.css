@@ -53,6 +53,9 @@
 .app-modal { animation: app-modal-enter 240ms cubic-bezier(.2, .75, .3, 1) both; }
 .Toastify__toast { border: 1px solid rgb(226 232 240 / .8); border-radius: 13px; box-shadow: 0 14px 32px rgb(20 34 61 / .18); }
 .Toastify__progress-bar { height: 3px; }
+.route-loading { display:grid;min-height:100vh;place-content:center;justify-items:center;gap:12px;background:#e6dfd1;color:#51493d;font:500 12px 'DM Mono',monospace;letter-spacing:.05em; }
+.route-loading__icon { width:28px;height:28px;color:#718678;animation:route-loader-turn 1s linear infinite; }
+@keyframes route-loader-turn { to { transform:rotate(360deg); } }
 
 /* Bow and arrow click feedback for the admin directory and assignment screens. */
 .bow-shot-layer { position: fixed; inset: 0; z-index: 10000; pointer-events: none; overflow: hidden; }
@@ -79,4 +82,4 @@
 @keyframes bow-arrow-flight { from { transform: rotate(var(--shot-angle)); } to { transform: translate(var(--flight-x), var(--flight-y)) rotate(var(--shot-angle)); } }
 
 @media (max-width: 640px) { .app-page-transition { animation-duration: 220ms; }.app-page-transition > .card { animation-delay: 0ms; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }.route-loading__icon { animation:none; } }

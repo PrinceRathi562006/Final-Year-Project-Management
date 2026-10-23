@@ -14,7 +14,9 @@ const adminNavigation = [
   { to: "/admin", label: "Home", end: true },
   { to: "/admin/students", label: "Students" },
   { to: "/admin/teachers", label: "Faculty" },
+  { to: "/admin/projects", label: "Project atlas" },
   { to: "/admin/assign-supervisor", label: "Mentor matches" },
+  { to: "/admin/deadlines", label: "Milestones" },
 ];
 
 const DashboardLayout = ({ userRole }) => {
@@ -22,9 +24,10 @@ const DashboardLayout = ({ userRole }) => {
   const [theme, setTheme] = useState(() => window.localStorage.getItem("manage-students-theme") === "light" ? "light" : "dark");
   const location = useLocation();
   const isAdminLanding = userRole === "Admin" && location.pathname === "/admin";
-  const isAdminWorkspace = userRole === "Admin" && /^\/admin\/(students|teachers|assign-supervisor)\/?$/.test(location.pathname);
+  const isAdminWorkspace = userRole === "Admin" && /^\/admin\/(students|teachers|assign-supervisor|projects|deadlines)\/?$/.test(location.pathname);
   const useAdminFrame = isAdminLanding || isAdminWorkspace;
   const { authUser } = useSelector((state) => state.auth);
+  const activeTheme = userRole === "Admin" ? "light" : theme;
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -72,12 +75,12 @@ const DashboardLayout = ({ userRole }) => {
   }, [isAdminWorkspace, location.pathname]);
 
   return (
-    <div className={`min-h-screen bg-slate-50 ${isAdminLanding ? "admin-landing-shell" : isAdminWorkspace ? "admin-workspace-shell" : "pt-[66px]"}`} data-theme={theme}>
+    <div className={`min-h-screen bg-slate-50 ${isAdminLanding ? "admin-landing-shell" : isAdminWorkspace ? "admin-workspace-shell" : "pt-[66px]"}`} data-theme={activeTheme}>
       {isAdminWorkspace && <div className="admin-scroll-scene" aria-hidden="true"><Suspense fallback={null}><AdminScrollScene /></Suspense></div>}
       {isAdminWorkspace && <header className="admin-workspace-header">
         <NavLink className="admin-workspace-brand" to="/admin"><span className="admin-workspace-brand__mark"><BookOpen size={17} /></span><span className="admin-workspace-brand__copy">PROJECT OFFICE<small>FIELDNOTES · 2026</small></span></NavLink>
         <nav aria-label="Admin workspace">{adminNavigation.map((item) => <NavLink key={item.to} to={item.to} end={item.end}>{item.label}</NavLink>)}</nav>
-        <div className="admin-workspace-account"><span>{authUser?.name || "Administrator"}</span><button type="button" onClick={async () => { try { await dispatch(logout()).unwrap(); navigate("/login", { replace: true }); } catch { /* Keep the current workspace when sign out fails. */ } }} title="Sign out" aria-label="Sign out"><LogOut size={16} /></button></div>
+        <div className="admin-workspace-account"><span className="admin-workspace-avatar" aria-hidden="true">{(authUser?.name || "A").trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span><span>{authUser?.name || "Administrator"}</span><button type="button" onClick={async () => { try { await dispatch(logout()).unwrap(); navigate("/login", { replace: true }); } catch { /* Keep the current workspace when sign out fails. */ } }} title="Sign out" aria-label="Sign out"><LogOut size={16} /></button></div>
         <div className="admin-workspace-scene-stage" aria-hidden="true"><Suspense fallback={null}><WorkspaceScene mode="dashboard" /></Suspense></div>
       </header>}
       {/* Navbar */}
@@ -103,7 +106,7 @@ const DashboardLayout = ({ userRole }) => {
         >
           <div className={useAdminFrame ? (isAdminLanding ? "admin-landing-page" : "admin-workspace-page") : "min-w-0 w-full p-6"}>
             <div className="app-page-transition" key={location.pathname}>
-              <Outlet context={{ theme, setTheme }} />
+              <Outlet context={{ theme: activeTheme, setTheme }} />
             </div>
           </div>
         </main>

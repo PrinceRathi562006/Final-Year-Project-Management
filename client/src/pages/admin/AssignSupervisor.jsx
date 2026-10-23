@@ -101,6 +101,27 @@ const AssignSupervisor = () => {
 
   useEffect(() => { setPage(1); }, [search, department, assignmentFilter, pageSize]);
 
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setSelectedId(null);
+        return;
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        document.getElementById("assignment-search")?.focus();
+        return;
+      }
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(event.target?.tagName) || !["ArrowDown", "ArrowUp"].includes(event.key) || !pageStudents.length) return;
+      event.preventDefault();
+      const current = pageStudents.findIndex((student) => student._id === selectedId);
+      const nextIndex = Math.min(pageStudents.length - 1, Math.max(0, current + (event.key === "ArrowDown" ? 1 : -1)));
+      setSelectedId(pageStudents[nextIndex]._id);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [pageStudents, selectedId]);
+
   const clearFilters = () => {
     setSearch("");
     setDepartment("all");
