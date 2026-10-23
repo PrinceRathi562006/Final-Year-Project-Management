@@ -33,3 +33,4 @@
 .admin-workspace-shell .admin-workspace-page .mt-list,.admin-workspace-shell .admin-workspace-page .ms-roster,.admin-workspace-shell .admin-workspace-page .as-roster,.admin-workspace-shell .admin-workspace-page .mt-skeleton{background:#f8f3e8!important}
 .admin-workspace-page .ms-scrim,.admin-workspace-page .as-scrim{display:none}
 @media(max-width:1100px){.admin-workspace-page .ms-scrim,.admin-workspace-page .as-scrim{display:block}}
+.admin-workspace-page .profile-preview-motion{width:100%;transform-origin:50% 45%;will-change:transform,opacity,filter}.admin-workspace-page .profile-preview-motion>.mt-detail{animation:none}
