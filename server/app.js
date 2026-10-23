@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL || "http://localhost:5173",
+        origin: process.env.FRONTEND_URL || "http://localhost:5173" || "https://final-year-project-management-gamma.vercel.app/",
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     })

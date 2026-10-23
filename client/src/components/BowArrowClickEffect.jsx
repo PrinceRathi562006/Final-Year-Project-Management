@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 const BowArrowClickEffect = () => {
   const [shot, setShot] = useState(null);
   const replayingClick = useRef(false);
+  const suppressNextCanvasClick = useRef(false);
 
   useEffect(() => {
     let timeoutId;
@@ -10,13 +11,14 @@ const BowArrowClickEffect = () => {
     const handleClick = (event) => {
       if (replayingClick.current) return;
 
-      const target = event.target instanceof Element
-        ? event.target.closest("button, a[href], input[type='button'], input[type='submit'], input[type='reset'], [role='button']")
-        : null;
+      const eventTarget = event.target instanceof Element ? event.target : null;
+      const target = eventTarget?.closest("button, a[href], input[type='button'], input[type='submit'], input[type='reset'], [role='button'], canvas, [data-bow-target]") || eventTarget;
 
-      if (!target || target.matches(":disabled, [aria-disabled='true']") || target.closest("[data-no-arrow-animation]")) return;
-
-      if (!/^\/admin(?:\/(students|teachers|assign-supervisor))?\/?$/.test(window.location.pathname)) return;
+      if (target instanceof HTMLCanvasElement && suppressNextCanvasClick.current) {
+        suppressNextCanvasClick.current = false;
+        return;
+      }
+      if (!target || target.matches(":disabled, [aria-disabled='true']") || target.closest("[data-no-arrow-animation], .bow-shot-layer")) return;
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -30,8 +32,8 @@ const BowArrowClickEffect = () => {
       const isLargeScreen = window.innerWidth >= 768;
       const startX = isLargeScreen ? 68 : 42;
       const startY = Math.max(isLargeScreen ? 92 : 50, window.innerHeight - (isLargeScreen ? 112 : 74));
-      const endX = rect.left + rect.width / 2;
-      const endY = rect.top + rect.height / 2;
+      const endX = target instanceof HTMLCanvasElement ? event.clientX : rect.left + rect.width / 2;
+      const endY = target instanceof HTMLCanvasElement ? event.clientY : rect.top + rect.height / 2;
       const dx = endX - startX;
       const dy = endY - startY;
       const angle = Math.atan2(dy, dx) * (180 / Math.PI);
@@ -48,16 +50,40 @@ const BowArrowClickEffect = () => {
 
         replayingClick.current = true;
         try {
-          target.click();
+          if (target instanceof HTMLCanvasElement) {
+            const pointerEvent = (type) => new PointerEvent(type, { bubbles: true, cancelable: true, clientX: event.clientX, clientY: event.clientY, pointerId: event.pointerId || 1, pointerType: event.pointerType || "mouse", isPrimary: true, button: 0 });
+            target.dispatchEvent(pointerEvent("pointerdown"));
+            target.dispatchEvent(pointerEvent("pointerup"));
+          } else if (target instanceof HTMLElement) {
+            target.click();
+          } else {
+            target.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: event.clientX, clientY: event.clientY, button: event.button }));
+          }
         } finally {
           replayingClick.current = false;
         }
       }, 1550);
     };
 
+    const handlePointerUp = (event) => {
+      if (replayingClick.current || !(event.target instanceof HTMLCanvasElement)) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const target = event.target;
+      const rect = target.getBoundingClientRect();
+      if (!rect.width || !rect.height || target.closest("[data-no-arrow-animation]")) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      handleClick(event);
+      suppressNextCanvasClick.current = true;
+      window.setTimeout(() => { suppressNextCanvasClick.current = false; }, 0);
+    };
+
     document.addEventListener("click", handleClick, true);
+    document.addEventListener("pointerup", handlePointerUp, true);
     return () => {
       document.removeEventListener("click", handleClick, true);
+      document.removeEventListener("pointerup", handlePointerUp, true);
       window.clearTimeout(timeoutId);
     };
   }, []);
