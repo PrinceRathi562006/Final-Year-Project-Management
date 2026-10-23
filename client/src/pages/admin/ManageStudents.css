@@ -122,3 +122,23 @@
   .ms-inspector .mt-facts > div { gap:9px; }
   .ms-inspector .mt-detail__actions .mt-btn { min-height:42px; }
 }
+
+/* macOS-inspired profile window controls and dock restore. */
+.ms-window { transform-origin: 92% 92%; will-change: transform, opacity, width, height; perspective: 1100px; }
+.ms-window__titlebar { display:flex;align-items:center;gap:12px;margin:-6px 0 6px;padding:0 0 13px;border-bottom:1px solid var(--line);color:var(--mute);font:9px 'DM Mono',monospace;letter-spacing:.1em; }
+.ms-window__traffic { display:flex;align-items:center;gap:7px; }
+.ms-window__traffic button { display:grid;width:13px;height:13px;place-items:center;padding:0;border:0;border-radius:50%;color:transparent;transition:filter .16s,transform .16s; }
+.ms-window__traffic button svg { width:8px;height:8px;opacity:0;stroke-width:3;transition:opacity .16s; }
+.ms-window__traffic:hover button svg,.ms-window__traffic button:focus-visible svg { opacity:.82; }
+.ms-window__traffic button:hover { filter:brightness(.91);transform:scale(1.12); }
+.ms-window__traffic .is-close { background:#ed6a5e; }.ms-window__traffic .is-minimize { background:#f4bf4f; }.ms-window__traffic .is-maximize { background:#61c554; }
+.ms-window__traffic button:focus-visible { outline:2px solid #596f61;outline-offset:3px; }
+.ms-window.is-maximized { position:fixed!important;z-index:1210!important;inset:78px 24px 24px!important;width:auto!important;max-width:none!important;max-height:none!important;overflow:auto;border-radius:12px!important;box-shadow:0 28px 90px rgba(42,35,24,.24)!important; }
+.ms-window.is-maximized .mt-detail { max-width:900px;margin:0 auto; }
+.ms-preview-dock { position:fixed;z-index:1250;right:24px;bottom:22px;display:grid;min-width:94px;justify-items:center;gap:5px;padding:9px 14px 8px;border:1px solid #c9bea9;border-radius:12px;background:rgba(248,243,232,.94);color:#433d32;box-shadow:0 10px 30px rgba(54,45,31,.2);backdrop-filter:blur(12px); }
+.ms-preview-dock>span { display:grid;width:29px;height:29px;place-items:center;border:1px solid #82917a;border-radius:50%;background:#e7e5d8;color:#4e5f50;font:600 12px 'DM Sans',sans-serif; }
+.ms-preview-dock small { max-width:120px;overflow:hidden;color:#716a5e;font-size:10px;text-overflow:ellipsis;white-space:nowrap; }
+.ms-preview-dock:hover { transform:translateY(-3px);box-shadow:0 14px 34px rgba(54,45,31,.25); }
+@media(max-width:1100px){.ms-window.is-maximized{inset:104px 14px 14px!important;max-height:none!important;border-radius:18px!important}.ms-preview-dock{right:16px;bottom:14px}}
+@media(max-width:600px){.ms-window.is-maximized{inset:104px 0 0!important;max-height:none!important;border-radius:20px 20px 0 0!important}.ms-window__titlebar{margin-top:0}.ms-preview-dock{right:50%;bottom:12px;transform:translateX(50%)}.ms-preview-dock:hover{transform:translate(50%,-3px)}}
+@media(prefers-reduced-motion:reduce){.ms-window,.ms-preview-dock{transition:none!important;scroll-behavior:auto!important}}
