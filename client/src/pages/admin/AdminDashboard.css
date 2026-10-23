@@ -5,3 +5,20 @@
 @media(max-width:960px){.sketch-intro{top:106px;left:5vw;width:36vw}.sketch-intro h1{font-size:48px}.sketch-index{right:4vw;width:30vw;top:140px}.sketch-index__item{min-height:52px}.sketch-index__item b{font-size:18px}.sketch-metrics{left:5vw;bottom:58px}.sketch-metric{width:145px}.sketch-header__center{display:none}}
 @media(max-width:650px){.sketch-admin{min-height:100svh;overflow:auto;padding:0 0 25px}.sketch-admin__scene{height:100svh;position:fixed;opacity:.53}.sketch-header{position:relative;height:64px;padding:0 18px}.sketch-header__user{font-size:10px}.sketch-intro{position:relative;top:auto;left:auto;width:auto;margin:34px 22px 24px}.sketch-intro h1{margin:15px 0 9px;font-size:48px}.sketch-intro p{font-size:12px}.sketch-index{display:none}.sketch-metrics{position:relative;inset:auto;margin:215px 16px 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.sketch-metric{width:auto;min-height:61px;padding:8px 6px;grid-template-columns:13px 1fr auto;column-gap:4px}.sketch-metric>span{font-size:7px}.sketch-metric b{font-size:19px}.sketch-footer{display:none}.sketch-mobile-links{position:relative;display:flex;gap:8px;overflow-x:auto;padding:0 16px 15px}.sketch-mobile-links a{flex:none;padding:9px 12px;border:1px solid #62574440;border-radius:3px;background:#eee7d8d9;color:#51493d;text-decoration:none;font:9px 'DM Mono',monospace}.sketch-admin__scene canvas{height:100svh!important}}
 @media(prefers-reduced-motion:reduce){.sketch-index__item{transition:none}}
+
+@media(max-width:650px){
+  .sketch-admin{min-height:100svh;padding-bottom:max(20px,env(safe-area-inset-bottom));overflow-x:clip}
+  .sketch-header{padding-right:max(14px,env(safe-area-inset-right));padding-left:max(14px,env(safe-area-inset-left))}
+  .sketch-brand{min-width:0;font-size:9px;letter-spacing:.06em}
+  .sketch-brand__mark{width:30px;height:30px;flex:none}
+  .sketch-header__user{max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sketch-intro{margin:26px 18px 18px}
+  .sketch-intro h1{font-size:clamp(40px,12vw,48px)}
+  .sketch-metrics{margin:190px 12px 14px;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .sketch-metric{min-width:0;padding:8px 5px;grid-template-columns:12px minmax(0,1fr);column-gap:4px}
+  .sketch-metric>span{font-size:clamp(6px,1.8vw,7px);line-height:1.25;overflow-wrap:anywhere}
+  .sketch-metric b{grid-column:2;font-size:18px}
+  .sketch-metric>svg:last-child{display:none}
+  .sketch-mobile-links{padding-right:max(12px,env(safe-area-inset-right));padding-left:max(12px,env(safe-area-inset-left));scroll-snap-type:x proximity}
+  .sketch-mobile-links a{min-height:40px;display:flex;align-items:center;scroll-snap-align:start;white-space:nowrap}
+}

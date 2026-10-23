@@ -38,3 +38,43 @@
 .admin-workspace-shell :is(a,button,input,select,[tabindex]):focus-visible{outline:3px solid #987347;outline-offset:3px;box-shadow:0 0 0 5px #f8f3e8}
 .admin-workspace-shell .mt-row__main:focus-visible,.admin-workspace-shell .ms-row__main:focus-visible,.admin-workspace-shell .as-row__main:focus-visible{outline-offset:-3px}
 @media(max-width:1000px){.admin-workspace-shell>.admin-workspace-header{grid-template-columns:1fr auto;grid-template-rows:38px auto;gap:5px 10px;height:auto;min-height:0;padding:10px 16px 8px}.admin-workspace-shell>.admin-workspace-header nav{grid-column:1/-1;grid-row:2;justify-self:stretch;display:flex;width:100%;overflow-x:auto;scrollbar-width:none}.admin-workspace-shell>.admin-workspace-header nav::-webkit-scrollbar{display:none}.admin-workspace-shell>.admin-workspace-header nav a{flex:none;padding:7px 10px}.admin-workspace-account{grid-column:2;grid-row:1}.admin-workspace-brand__mark{width:31px;height:31px}.admin-workspace-shell .admin-workspace-main{padding-top:98px}.admin-workspace-shell .admin-workspace-page>.app-page-transition{min-height:calc(100vh - 98px)}.admin-workspace-shell .admin-workspace-page .mt-page{min-height:calc(100vh - 98px);padding-top:18px}.admin-workspace-shell .admin-scroll-scene{top:98px;opacity:.12}}
+
+/* Narrow phone layout fixes for the fixed admin frame. */
+@media (max-width: 640px) {
+  .admin-workspace-shell { overflow-x: clip; }
+  .admin-workspace-shell > .admin-workspace-header { grid-template-columns:minmax(0,1fr) auto; gap:5px 8px; padding-right:max(12px,env(safe-area-inset-right)); padding-left:max(12px,env(safe-area-inset-left)); }
+  .admin-workspace-brand { min-width:0;gap:7px; }
+  .admin-workspace-brand__copy { overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px; }
+  .admin-workspace-brand__copy small { font-size:7px; }
+  .admin-workspace-account { gap:6px; }
+  .admin-workspace-account > span:nth-child(2) { display:none; }
+  .admin-workspace-account button { width:30px;height:30px; }
+  .admin-workspace-shell > .admin-workspace-header nav { gap:2px; }
+  .admin-workspace-shell > .admin-workspace-header nav a { padding:7px 9px;font-size:10px; }
+  .admin-workspace-shell .admin-workspace-main { padding-top:96px; }
+  .admin-workspace-shell .admin-workspace-page > .app-page-transition { min-height:calc(100vh - 96px); }
+  .admin-workspace-shell .admin-workspace-page .mt-page { padding:16px 12px 30px; }
+  .admin-workspace-page .mt-shell { gap:16px; }
+  .admin-workspace-page .mt-head h1 { font-size:clamp(2.1rem,11vw,3rem); }
+  .admin-workspace-page .mt-lede { font-size:.82rem;line-height:1.55; }
+  .admin-workspace-page .mt-hall { padding:12px; }
+  .admin-workspace-page .mt-hall__stats { gap:8px 12px; }
+  .admin-workspace-page .mt-hall__stats > div { flex:1 1 82px; }
+  .admin-workspace-page .mt-controls { grid-template-columns:minmax(0,1fr);gap:9px;padding:10px; }
+  .admin-workspace-page .mt-search { min-width:0; }
+  .admin-workspace-page .mt-views { width:max-content;max-width:100%; }
+  .admin-workspace-page .mt-sentence { gap:4px 7px;font-size:1rem;line-height:1.65; }
+  .admin-workspace-page .mt-pick select { max-width:min(68vw,220px);font-size:.9rem; }
+  .admin-workspace-page .mt-pager { gap:10px; }
+  .admin-workspace-page .mt-pager > div { width:100%;justify-content:space-between; }
+}
+@media (max-width: 380px) {
+  .admin-workspace-brand__mark { width:27px;height:27px; }
+  .admin-workspace-brand__copy { font-size:8px;letter-spacing:.06em; }
+  .admin-workspace-account .admin-workspace-avatar { display:none; }
+  .admin-workspace-shell > .admin-workspace-header nav a { padding:7px 8px;font-size:9px; }
+  .admin-workspace-page .mt-page { padding-right:9px;padding-left:9px; }
+  .admin-workspace-page .mt-hall__stats > div { flex-basis:72px; }
+  .admin-workspace-page .mt-detail { padding:16px 16px 18px; }
+  .admin-workspace-page .ms-window__titlebar { gap:8px;font-size:8px; }
+}
