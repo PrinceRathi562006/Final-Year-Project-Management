@@ -5,6 +5,26 @@ import * as THREE from "three";
 function PaperPlate({ plate, index, hovered, setHovered, onSelect }) {
   const group = useRef();
   const material = useMemo(() => new THREE.MeshStandardMaterial({ color: "#f2ead9", roughness: 0.83, side: THREE.DoubleSide }), []);
+  const titleTexture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 640;
+    canvas.height = 128;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#40392f";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    let fontSize = 54;
+    context.font = `600 ${fontSize}px Georgia, serif`;
+    while (context.measureText(plate.title).width > canvas.width - 32 && fontSize > 30) {
+      fontSize -= 2;
+      context.font = `600 ${fontSize}px Georgia, serif`;
+    }
+    context.fillText(plate.title, canvas.width / 2, canvas.height / 2);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+  }, [plate.title]);
   useFrame(({ clock }, delta) => {
     if (!group.current) return;
     const active = hovered === index;
@@ -21,6 +41,7 @@ function PaperPlate({ plate, index, hovered, setHovered, onSelect }) {
     <mesh position={[0, -0.25, 0.078]}><planeGeometry args={[plate.size[0] - 0.42, 0.014]} /><meshBasicMaterial color="#665b4e" transparent opacity={0.62} /></mesh>
     <mesh position={[0, -0.39, 0.078]}><planeGeometry args={[plate.size[0] - 0.72, 0.012]} /><meshBasicMaterial color="#887a68" transparent opacity={0.35} /></mesh>
     <mesh position={[0, -0.53, 0.078]}><planeGeometry args={[plate.size[0] - 0.9, 0.012]} /><meshBasicMaterial color="#887a68" transparent opacity={0.27} /></mesh>
+    <mesh position={[0, -0.92, 0.082]}><planeGeometry args={[plate.size[0] - 0.28, 0.3]} /><meshBasicMaterial map={titleTexture} transparent toneMapped={false} /></mesh>
   </group>;
 }
 
