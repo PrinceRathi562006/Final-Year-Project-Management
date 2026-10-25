@@ -23,6 +23,7 @@ import { getUser } from "./store/slices/authSlice";
 import { ToastContainer } from "react-toastify";
 import { Loader } from "lucide-react";
 import BowArrowClickEffect from "./components/BowArrowClickEffect";
+import { getAllUsers } from "./store/slices/adminSlice";
 
 const App = () => {
   const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
@@ -33,6 +34,12 @@ const App = () => {
   useEffect(() => {
     dispatch(getUser());
   }, [dispatch]);
+
+  useEffect(() => {
+    if(authUser?.role === "Admin"){
+      dispatch(getAllUsers());
+    }
+  });
 
   const ProtectedRoute = ({ children, allowedRoles }) => {
     if (!authUser) {
