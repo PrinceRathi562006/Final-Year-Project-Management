@@ -58,7 +58,7 @@ const projectSchema = new mongoose.Schema({
             type: {
                 type: String,
                 enum: ["positive", "negative", "general"],
-                default: general,
+                default: "general",
             },
             title: {
                 type: String,
