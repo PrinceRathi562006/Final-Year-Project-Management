@@ -6,13 +6,10 @@ const {errorMiddleware} = require('./middlewares/error');
 const authRouter = require('./router/userRoute.js');
 const adminRouter = require('./router/adminRoutes.js')
 const studentRouter = require('./router/studentRoutes.js')
-const {fileURLToPath} = require("url");
 const path = require("path");
+const fs = require('fs');
 
 const app = express();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.__dirname(__filename);
 
 const allowedOrigins = new Set([
     "http://localhost:5173",
@@ -37,8 +34,8 @@ app.use(
 const uploadsDir = path.join(__dirname, "../uploads");
 const tempDir = path.join(__dirname, "temp");
 
-if(!fs.existsSync(uploadDir)) fs.mkdirSYNC(uploadsDir, {recursive: true});
-if(!fs.existsSync(tempDir)) fs.mkdirSYNC(tempDir, {recursive: true});
+if(!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, {recursive: true});
+if(!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, {recursive: true});
 
 app.use(cookieParser());
 app.use(express.json());

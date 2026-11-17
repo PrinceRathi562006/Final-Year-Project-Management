@@ -5,7 +5,6 @@ const {
   uploadFiles,
   getAvailableSupervisors,
 } = require("../controllers/studentController.js");
-const multer = require("multer");
 const {
   isAuthenticated,
   isAuthorized,
@@ -22,7 +21,7 @@ router.post(
 );
 
 router.post(
-  "/proposal",
+  "/project-proposal",
   isAuthenticated,
   isAuthorized("Student"),
   submitProposal,
