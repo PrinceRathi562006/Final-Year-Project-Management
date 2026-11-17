@@ -394,6 +394,127 @@
     height: 100svh !important;
   }
 }
+
+/* Responsive home layout: keep the directory usable without relying on the
+   desktop book illustration to provide spacing for the content. */
+@media (min-width: 651px) and (max-width: 960px) {
+  .sketch-admin {
+    min-height: 100svh;
+    overflow: auto;
+    padding: 0 0 58px;
+  }
+  .sketch-header {
+    position: relative;
+    height: 68px;
+    padding: 0 28px;
+  }
+  .sketch-intro {
+    position: relative;
+    inset: auto;
+    width: min(48%, 470px);
+    margin: 48px 0 28px 6vw;
+  }
+  .sketch-intro h1 {
+    font-size: clamp(42px, 6vw, 58px);
+  }
+  .sketch-index {
+    top: 142px;
+    right: 5vw;
+    width: min(40%, 360px);
+  }
+  .sketch-index__item {
+    min-height: 50px;
+  }
+  .sketch-index__item b {
+    font-size: 18px;
+  }
+  .sketch-metrics {
+    position: relative;
+    inset: auto;
+    margin: 180px 5vw 20px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .sketch-metric {
+    width: auto;
+  }
+  .sketch-footer {
+    position: fixed;
+  }
+  .sketch-admin__scene {
+    position: fixed;
+    opacity: 0.24;
+  }
+}
+
+@media (max-width: 650px) {
+  .sketch-admin {
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .sketch-admin__scene {
+    position: fixed;
+    inset: 64px 0 auto;
+    height: min(58svh, 430px);
+    opacity: 0.13;
+    pointer-events: none;
+  }
+  .sketch-header {
+    flex: none;
+  }
+  .sketch-intro {
+    margin: 30px 20px 22px;
+  }
+  .sketch-intro h1 {
+    max-width: 13ch;
+    font-size: clamp(39px, 11vw, 48px);
+  }
+  .sketch-intro p {
+    max-width: 32ch;
+    font-size: 13px;
+  }
+  .sketch-metrics {
+    margin: 0 14px 20px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .sketch-metric {
+    min-height: 58px;
+    padding: 10px 12px;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    column-gap: 9px;
+  }
+  .sketch-metric > span {
+    font-size: 10px;
+    overflow-wrap: normal;
+  }
+  .sketch-metric b {
+    grid-column: 3;
+    grid-row: 1;
+    font-size: 22px;
+  }
+  .sketch-mobile-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    padding: 0 14px 10px;
+  }
+  .sketch-mobile-links a {
+    min-width: 0;
+    min-height: 44px;
+    justify-content: center;
+    padding: 10px 8px;
+    font-size: 9px;
+    text-align: center;
+    white-space: normal;
+  }
+  .sketch-admin__scene canvas {
+    height: 100% !important;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .sketch-index__item {
     transition: none;
@@ -433,38 +554,46 @@
     font-size: clamp(40px, 12vw, 48px);
   }
   .sketch-metrics {
-    margin: 190px 12px 14px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 5px;
+    margin: 0 14px 20px;
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   .sketch-metric {
     min-width: 0;
-    padding: 8px 5px;
-    grid-template-columns: 12px minmax(0, 1fr);
-    column-gap: 4px;
+    min-height: 58px;
+    padding: 10px 12px;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    column-gap: 9px;
   }
   .sketch-metric > span {
-    font-size: clamp(6px, 1.8vw, 7px);
+    font-size: 10px;
     line-height: 1.25;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
   }
   .sketch-metric b {
-    grid-column: 2;
-    font-size: 18px;
+    grid-column: 3;
+    grid-row: 1;
+    font-size: 22px;
   }
   .sketch-metric > svg:last-child {
     display: none;
   }
   .sketch-mobile-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
     padding-right: max(12px, env(safe-area-inset-right));
     padding-left: max(12px, env(safe-area-inset-left));
-    scroll-snap-type: x proximity;
   }
   .sketch-mobile-links a {
-    min-height: 40px;
+    min-width: 0;
+    min-height: 44px;
     display: flex;
     align-items: center;
-    scroll-snap-align: start;
-    white-space: nowrap;
+    justify-content: center;
+    padding: 10px 8px;
+    text-align: center;
+    white-space: normal;
   }
 }
