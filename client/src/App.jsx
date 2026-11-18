@@ -18,6 +18,12 @@ const ManageTeachers = lazy(() => import("./pages/admin/ManageTeachers"));
 const AssignSupervisor = lazy(() => import("./pages/admin/AssignSupervisor"));
 const DeadlinesPage = lazy(() => import("./pages/admin/DeadlinesPage"));
 const ProjectsPage = lazy(() => import("./pages/admin/ProjectsPage"));
+const StudentDashboard = lazy(() => import("./pages/student/StudentDashboard"));
+const SubmitProposal = lazy(() => import("./pages/student/SubmitProposal"));
+const UploadFiles = lazy(() => import("./pages/student/UploadFiles"));
+const SupervisorPage = lazy(() => import("./pages/student/SupervisorPage"));
+const FeedbackPage = lazy(() => import("./pages/student/FeedbackPage"));
+const NotificationsPage = lazy(() => import("./pages/student/NotificationsPage"));
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./store/slices/authSlice";
 import { ToastContainer } from "react-toastify";
@@ -66,7 +72,7 @@ const App = () => {
 
   if (isCheckingAuth && !authUser) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex items-center justify-center h-screen">
         <Loader className="size-10 animate-spin" />
       </div>
     );
@@ -97,6 +103,22 @@ const App = () => {
           <Route path="assign-supervisor" element={<AssignSupervisor />} />
           <Route path="deadlines" element={<DeadlinesPage />} />
           <Route path="projects" element={<ProjectsPage />} />
+        </Route>
+
+        <Route
+          path="/student"
+          element={
+            <ProtectedRoute allowedRoles={["Student"]}>
+              <DashboardLayout userRole="Student" />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<StudentDashboard />} />
+          <Route path="submit-proposal" element={<SubmitProposal />} />
+          <Route path="upload-files" element={<UploadFiles />} />
+          <Route path="supervisor" element={<SupervisorPage />} />
+          <Route path="feedback" element={<FeedbackPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
         </Route>
 
       </Routes>

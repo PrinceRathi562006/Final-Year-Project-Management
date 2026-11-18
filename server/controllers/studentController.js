@@ -87,4 +87,33 @@ const getAvailableSupervisors = asyncHandler(
   }
 );
 
+const getSupervisor = asyncHandler(async (req, res, next) => {
+  const studentId = req.user._id;
+  const student = await User.findById(studentId).populate("supervisor", "name email department experties");
+
+  if(!student.supervisor){
+    return res.status(200).json({
+      success: true,
+      data: { supervisor: null },
+      message: "No supervisor assigned yet",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: { supervisor: student.supervisor },
+  });
+});
+
+const requestSupervisor = asyncHandler(async (req, res, next) => {
+  const {teacherId, message} = req.body;
+  const studentId = req.user._id;
+
+  const student = await User.findById(studentId);
+
+  if(student.supervisor){
+    return next(new ErrorHandler("You already have a supervisor assigned", 400));
+  }
+})
+
 module.exports = { getStudentProject, submitProposal, uploadFiles, getAvailableSupervisors };

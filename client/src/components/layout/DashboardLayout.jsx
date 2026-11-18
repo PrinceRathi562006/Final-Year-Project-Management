@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
+﻿import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Suspense, lazy, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BookOpen, LogOut } from "lucide-react";
@@ -19,13 +19,20 @@ const adminNavigation = [
   { to: "/admin/deadlines", label: "Milestones" },
 ];
 
+const studentNavigation = [
+  { to: "/student", label: "Home", end: true },
+  { to: "/student/submit-proposal", label: "Proposal" },
+  { to: "/student/upload-files", label: "Upload" },
+];
+
 const DashboardLayout = ({ userRole }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [theme, setTheme] = useState(() => window.localStorage.getItem("manage-students-theme") === "light" ? "light" : "dark");
   const location = useLocation();
   const isAdminLanding = userRole === "Admin" && location.pathname === "/admin";
   const isAdminWorkspace = userRole === "Admin" && /^\/admin\/(students|teachers|assign-supervisor|projects|deadlines)\/?$/.test(location.pathname);
-  const useAdminFrame = isAdminLanding || isAdminWorkspace;
+  const isStudentWorkspace = userRole === "Student" && /^\/student(?:\/(submit-proposal|upload-files|supervisor|feedback|notifications))?\/?$/.test(location.pathname);
+  const useAdminFrame = isAdminLanding || isAdminWorkspace || isStudentWorkspace;
   const { authUser } = useSelector((state) => state.auth);
   const activeTheme = userRole === "Admin" ? "light" : theme;
   const dispatch = useDispatch();
@@ -80,13 +87,13 @@ const DashboardLayout = ({ userRole }) => {
   }, [isAdminWorkspace, location.pathname]);
 
   return (
-    <div className={`min-h-screen bg-slate-50 ${isAdminLanding ? "admin-landing-shell" : isAdminWorkspace ? "admin-workspace-shell" : "pt-[66px]"}`} data-theme={activeTheme}>
+    <div className={`min-h-screen bg-slate-50 ${isAdminLanding ? "admin-landing-shell" : isAdminWorkspace ? "admin-workspace-shell" : isStudentWorkspace ? "admin-workspace-shell student-workspace-shell" : "pt-[66px]"}`} data-theme={activeTheme}>
       {isAdminWorkspace && <div className="admin-scroll-scene" aria-hidden="true"><Suspense fallback={null}><AdminScrollScene /></Suspense></div>}
-      {isAdminWorkspace && <header className="admin-workspace-header">
-        <NavLink className="admin-workspace-brand" to="/admin"><span className="admin-workspace-brand__mark"><BookOpen size={17} /></span><span className="admin-workspace-brand__copy">PROJECT OFFICE<small>FIELDNOTES · 2026</small></span></NavLink>
-        <nav aria-label="Admin workspace">{adminNavigation.map((item) => <NavLink key={item.to} to={item.to} end={item.end}>{item.label}</NavLink>)}</nav>
+      {(isAdminWorkspace || isStudentWorkspace) && <header className={`admin-workspace-header${isStudentWorkspace ? " student-workspace-header" : ""}`}>
+        <NavLink className="admin-workspace-brand" to={isStudentWorkspace ? "/student" : "/admin"}><span className="admin-workspace-brand__mark"><BookOpen size={17} /></span><span className="admin-workspace-brand__copy">{isStudentWorkspace ? "STUDENT FIELDNOTES" : "PROJECT OFFICE"}<small>FIELDNOTES · 2026</small></span></NavLink>
+        <nav aria-label={isStudentWorkspace ? "Student workspace" : "Admin workspace"}>{(isStudentWorkspace ? studentNavigation : adminNavigation).map((item) => <NavLink key={item.to} to={item.to} end={item.end}>{item.label}</NavLink>)}</nav>
         <div className="admin-workspace-account"><span className="admin-workspace-avatar" aria-hidden="true">{(authUser?.name || "A").trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span><span>{authUser?.name || "Administrator"}</span><button type="button" onClick={async () => { try { await dispatch(logout()).unwrap(); navigate("/login", { replace: true }); } catch { /* Keep the current workspace when sign out fails. */ } }} title="Sign out" aria-label="Sign out"><LogOut size={16} /></button></div>
-        <div className="admin-workspace-scene-stage" aria-hidden="true"><Suspense fallback={null}><WorkspaceScene mode="dashboard" /></Suspense></div>
+        {!isStudentWorkspace && <div className="admin-workspace-scene-stage" aria-hidden="true"><Suspense fallback={null}><WorkspaceScene mode="dashboard" /></Suspense></div>}
       </header>}
       {/* Navbar */}
       {!useAdminFrame && <Navbar
@@ -107,10 +114,10 @@ const DashboardLayout = ({ userRole }) => {
 
         {/* Main Content */}
         <main
-          className={isAdminLanding ? "admin-landing-main" : isAdminWorkspace ? "admin-workspace-main" : `min-w-0 flex-1 transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"}`}
+          className={isAdminLanding ? "admin-landing-main" : isAdminWorkspace || isStudentWorkspace ? "admin-workspace-main" : `min-w-0 flex-1 transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"}`}
         >
           <div className={useAdminFrame ? (isAdminLanding ? "admin-landing-page" : "admin-workspace-page") : "min-w-0 w-full p-6"}>
-            <Suspense fallback={<div className="route-loading route-loading--inline" role="status" aria-live="polite"><span className="route-loading__icon" aria-hidden="true" /><span>Opening this section…</span></div>}>
+            <Suspense fallback={<div className="route-loading route-loading--inline" role="status" aria-live="polite"><span className="route-loading__icon" aria-hidden="true" /><span>Opening this sectionâ€¦</span></div>}>
               <div className="app-page-transition" key={location.pathname}>
                 <Outlet context={{ theme: activeTheme, setTheme }} />
               </div>
