@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axios";
 
 const getErrorMessage = (error, fallback) =>
-  error.response?.data?.message || error.message || fallback;
+  error.response?.data?.message || error.response?.data?.error || error.message || fallback;
 
 export const fetchStudentProject = createAsyncThunk(
   "student/fetchProject",
@@ -30,6 +30,25 @@ export const submitProposal = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(
         getErrorMessage(error, "Your proposal could not be submitted."),
+      );
+    }
+  },
+);
+
+export const uploadProjectFiles = createAsyncThunk(
+  "student/uploadProjectFiles",
+  async ({ projectId, files }, thunkAPI) => {
+    try {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("files", file));
+      const response = await axiosInstance.post(
+        `/student/upload/${projectId}`,
+        formData,
+      );
+      return response.data.data?.project ?? null;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        getErrorMessage(error, "Your files could not be uploaded."),
       );
     }
   },
@@ -83,6 +102,8 @@ export const requestSupervisor = createAsyncThunk(
   },
 );
 
+export const uploadFiles = uploadProjectFiles;
+
 const initialState = {
   project: null,
   files: [],
@@ -95,6 +116,8 @@ const initialState = {
   status: null,
   isLoadingProject: false,
   isSubmittingProposal: false,
+  isUploadingFiles: false,
+  uploadError: null,
   projectError: null,
   proposalError: null,
   isLoadingSupervisors: false,
@@ -114,6 +137,9 @@ const studentSlice = createSlice({
     },
     clearSupervisorRequestError(state) {
       state.supervisorRequestError = null;
+    },
+    clearUploadError(state) {
+      state.uploadError = null;
     },
   },
   extraReducers: (builder) => {
@@ -141,6 +167,18 @@ const studentSlice = createSlice({
       .addCase(submitProposal.rejected, (state, action) => {
         state.isSubmittingProposal = false;
         state.proposalError = action.payload || "Your proposal could not be submitted.";
+      })
+      .addCase(uploadProjectFiles.pending, (state) => {
+        state.isUploadingFiles = true;
+        state.uploadError = null;
+      })
+      .addCase(uploadProjectFiles.fulfilled, (state, action) => {
+        state.isUploadingFiles = false;
+        if (action.payload) state.project = action.payload;
+      })
+      .addCase(uploadProjectFiles.rejected, (state, action) => {
+        state.isUploadingFiles = false;
+        state.uploadError = action.payload || "Your files could not be uploaded.";
       })
       .addCase(fetchAvailableSupervisors.pending, (state) => {
         state.isLoadingSupervisors = true;
@@ -181,6 +219,10 @@ const studentSlice = createSlice({
   },
 });
 
-export const { clearProposalError, clearSupervisorRequestError } = studentSlice.actions;
+export const {
+  clearProposalError,
+  clearSupervisorRequestError,
+  clearUploadError,
+} = studentSlice.actions;
 
 export default studentSlice.reducer;

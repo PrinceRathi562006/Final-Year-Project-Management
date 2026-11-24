@@ -1,5 +1,7 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const { ErrorHandler } = require("../middlewares/error");
+const fs = require("fs");
+const path = require("path");
 const User = require("../models/User.js");
 const projectService = require("../services/projectServices.js");
 const requestService = require("../services/requestServices.js");
@@ -56,8 +58,9 @@ const uploadFiles = asyncHandler(async (req, res, next) => {
   const {projectId} = req.params;
   const studentId = req.user._id;
   const project = await projectService.getProjectById(projectId);
+  const projectStudentId = project.student?._id || project.student;
 
-  if(!project || project.student.toString() !== studentId.toString()){
+  if(!project || projectStudentId.toString() !== studentId.toString()){
     return next(new ErrorHandler("Not authorized to upload files to this project", 403));
   }
 
@@ -72,6 +75,39 @@ const uploadFiles = asyncHandler(async (req, res, next) => {
     message: "File uploaded successfully",
     data: { project: updatedProject },
   })
+});
+
+const getProjectFile = asyncHandler(async (req, res, next) => {
+  const { projectId, fileId } = req.params;
+  const studentId = req.user._id;
+  const project = await projectService.getProjectById(projectId);
+  const projectStudentId = project.student?._id || project.student;
+
+  if (projectStudentId.toString() !== studentId.toString()) {
+    return next(new ErrorHandler("You are not authorized to view this project file", 403));
+  }
+
+  const projectFile = project.files.id(fileId);
+  if (!projectFile) {
+    return next(new ErrorHandler("Project file not found", 404));
+  }
+
+  const projectUploadDirectory = path.resolve(__dirname, "../uploads/projects", projectId);
+  const filePath = path.resolve(projectFile.fileUrl);
+  if (!filePath.startsWith(`${projectUploadDirectory}${path.sep}`)) {
+    return next(new ErrorHandler("Invalid project file location", 400));
+  }
+
+  try {
+    await fs.promises.access(filePath, fs.constants.R_OK);
+  } catch {
+    return next(new ErrorHandler("The stored project file is unavailable", 404));
+  }
+
+  res.type(projectFile.fileType || "application/octet-stream");
+  return res.sendFile(filePath, (error) => {
+    if (error && !res.headersSent) next(error);
+  });
 });
 
 const getAvailableSupervisors = asyncHandler(
@@ -155,4 +191,4 @@ const requestSupervisor = asyncHandler(async (req, res, next) => {
   });
 })
 
-module.exports = { getStudentProject, submitProposal, uploadFiles, getAvailableSupervisors, getSupervisor, requestSupervisor };
+module.exports = { getStudentProject, submitProposal, uploadFiles, getProjectFile, getAvailableSupervisors, getSupervisor, requestSupervisor };

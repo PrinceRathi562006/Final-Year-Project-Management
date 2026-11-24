@@ -28,8 +28,8 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`
         const ext = path.extname(file.originalname);
-        cb(null, `${file.filename}-${uniqueSuffix}${ext}`);
-        // cb - callBack
+        const baseName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9._-]/g, "_");
+        cb(null, `${baseName || "upload"}-${uniqueSuffix}${ext}`);
     }
 });
 
@@ -109,12 +109,13 @@ const handleUploadError = (err, req, res, next) => {
             });
         }
 
-        if(err.message && err.message.includes("Invalid file type")){
-            return res.status(400).json({
-                success: false,
-                error: err.message,
-            });
-        }
+    }
+
+    if(err.message && err.message.toLowerCase().includes("invalid file")){
+        return res.status(400).json({
+            success: false,
+            error: err.message,
+        });
     }
 
     next(err);

@@ -3,6 +3,7 @@ const {
   getStudentProject,
   submitProposal,
   uploadFiles,
+  getProjectFile,
   getAvailableSupervisors,
   getSupervisor,
   requestSupervisor,
@@ -36,6 +37,13 @@ router.post(
   upload.array("files", 10),
   handleUploadError,
   uploadFiles,
+);
+
+router.get(
+  "/project/:projectId/files/:fileId",
+  isAuthenticated,
+  isAuthorized("Student"),
+  getProjectFile,
 );
 
 router.get(
