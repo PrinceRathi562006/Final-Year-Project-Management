@@ -83,12 +83,41 @@
 @media(max-width:1000px){.admin-workspace-page .is-depth-pending,.admin-workspace-page .is-depth-visible{opacity:1!important;transform:none!important;transition:none!important}}
 
 /* Student Fieldnotes uses the same frame and warm folio navigation as admin. */
-.student-workspace-shell { background:#e6dfd1!important; }
+.student-workspace-shell { --student-ivory:#F4EFE5;--student-paper:#FFFCF5;--student-forest:#344E41;--student-terracotta:#A66D49;--student-charcoal:#292820;--student-sand:#DCD2C1;--student-sage:#E8EEE5;--student-clay:#F4E9DD;background:var(--student-ivory)!important;color:var(--student-charcoal); }
 .student-workspace-shell>.student-workspace-header { position:fixed;top:0;right:0;left:0;z-index:1000; }
 .student-workspace-shell .admin-workspace-main { padding-top:64px; }
 .student-workspace-shell .admin-workspace-page { min-height:calc(100vh - 64px);padding:0!important; }
+.student-workspace-shell>.student-workspace-header { border-bottom-color:var(--student-sand);background:rgba(255,252,245,.97); }
+.student-workspace-shell .student-workspace-header .admin-workspace-brand__mark { border-color:var(--student-sand);color:var(--student-terracotta); }
+.student-workspace-shell .student-workspace-header .admin-workspace-brand__copy { color:var(--student-charcoal); }
+.student-workspace-shell .student-workspace-header .admin-workspace-brand__copy small { color:#81796c; }
+.student-workspace-shell .student-workspace-header nav a { border-color:transparent;color:#746d61; }
+.student-workspace-shell .student-workspace-header nav a:hover,.student-workspace-shell .student-workspace-header nav a.active { border-color:var(--student-sand);background:var(--student-forest);color:var(--student-paper); }
+.student-workspace-shell .student-workspace-header .admin-workspace-account { color:var(--student-charcoal); }
+.student-workspace-shell .student-workspace-header .admin-workspace-avatar { border-color:var(--student-sand);background:var(--student-sage);color:var(--student-forest); }
+.student-workspace-shell .student-workspace-header .admin-workspace-account button { border-color:var(--student-sand);background:var(--student-paper);color:var(--student-forest); }
+.student-workspace-shell .student-workspace-header .admin-workspace-account button:hover { background:var(--student-clay); }
 .student-workspace-header .admin-workspace-brand__copy { white-space:nowrap; }
-.student-workspace-header nav a.active { background:#f0e8d9; }
+.student-workspace-header nav a.active { background:var(--student-forest);color:var(--student-paper); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) { --student-ivory:#F4EFE5;--student-paper:#FFFCF5;--student-forest:#344E41;--student-terracotta:#A66D49;--student-charcoal:#292820;--student-sand:#DCD2C1;--student-sage:#E8EEE5;--student-clay:#F4E9DD;color:var(--student-charcoal);background-color:var(--student-ivory);background-image:radial-gradient(ellipse at 80% 7%,#FFFCF5 0,transparent 38%),linear-gradient(132deg,#F4EFE5,#F4EFE5 60%,#F4EFE5); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(h1,h2,h3,strong) { color:var(--student-charcoal); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.student-home__metric,.student-home__project-panel,.student-home__steps-panel,.student-home__project-card,.student-home__shortcuts,.supervisor-overview-card,.supervisor-card,.supervisor-directory__toolbar,.supervisor-state,.supervisor-project-summary,.supervisor-current-panel,.supervisor-project-details,.proposal-compose,.proposal-aside,.proposal-status) { border-color:var(--student-sand);background-color:var(--student-paper); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.student-home__metric,.supervisor-overview-card,.supervisor-card,.proposal-compose) { border-top-color:var(--student-terracotta); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.student-home__empty-project a,.proposal-form__bottom button,.supervisor-state--error button,.supervisor-request-modal__submit,.supervisor-card__request) { border-color:var(--student-forest);background:var(--student-forest);color:var(--student-paper); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.supervisor-request-modal__cancel,.supervisor-directory__toolbar button,.supervisor-search button,.supervisor-request-modal__header button) { border-color:var(--student-sand);background:var(--student-clay);color:var(--student-charcoal); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(a,.student-home__text-link,.proposal-status__actions a,.proposal-status__actions button) { color:var(--student-forest); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(svg,.student-home__metric-icon,.supervisor-overview-card__icon,.supervisor-card__label svg,.proposal-page__kicker svg) { color:var(--student-forest); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.student-home__empty-project a,.proposal-form__bottom button,.supervisor-state--error button,.supervisor-request-modal__submit,.supervisor-card__request) svg { color:var(--student-paper); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.student-home__hero h1 em,.supervisor-directory__intro h1 em,.proposal-page__intro h1 em,.proposal-aside__copy h2 em,.student-home__hero-mark svg,.supervisor-directory__seal svg) { color:var(--student-terracotta); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.student-home__project-meta,.student-home__step,.supervisor-card__details,.proposal-status__description) { border-color:var(--student-sand); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.student-home__feedback,.student-home__step-note,.supervisor-directory__note,.supervisor-request-modal__project,.proposal-status__reminder,.proposal-status__badge) { border-color:var(--student-sand);background:var(--student-clay); }
+.student-workspace-shell :is(.student-home,.supervisor-directory,.proposal-page) :is(.student-home__step.is-done .student-home__step-number,.supervisor-card__assigned,.proposal-status--approved .proposal-status__badge) { border-color:var(--student-sand);background:var(--student-sage);color:var(--student-forest); }
+.student-workspace-shell .supervisor-request-modal { border-color:var(--student-sand);border-top-color:var(--student-forest);background:var(--student-paper); }
+.student-workspace-shell .supervisor-request-modal textarea,.student-workspace-shell :is(.supervisor-search,.supervisor-filter,.proposal-field input,.proposal-field textarea) { border-color:var(--student-sand);background:var(--student-paper);color:var(--student-charcoal); }
+.student-workspace-shell :is(.student-home__status--approved,.student-home__status--completed,.supervisor-assigned-notice) { border-color:var(--student-sand);background:var(--student-sage);color:var(--student-forest); }
+.student-workspace-shell :is(.student-home__status--pending,.supervisor-card__tags span,.proposal-status__badge) { border-color:var(--student-sand);background:var(--student-clay);color:var(--student-charcoal); }
+body:has(.student-workspace-shell) .Toastify__toast--success { border:1px solid #DCD2C1;background:#E8EEE5;color:#344E41; }
+body:has(.student-workspace-shell) .Toastify__toast--info { border:1px solid #DCD2C1;background:#F4E9DD;color:#292820; }
 @media(max-width:1000px) {
   .student-workspace-shell .admin-workspace-main { padding-top:98px; }
   .student-workspace-shell .admin-workspace-page { min-height:calc(100vh - 98px); }

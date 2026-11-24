@@ -4,6 +4,8 @@ const {
   submitProposal,
   uploadFiles,
   getAvailableSupervisors,
+  getSupervisor,
+  requestSupervisor,
 } = require("../controllers/studentController.js");
 const {
   isAuthenticated,
@@ -13,7 +15,7 @@ const {upload, handleUploadError} = require("../middlewares/upload.js");
 
 const router = express.Router();
 
-router.post(
+router.get(
   "/project",
   isAuthenticated,
   isAuthorized("Student"),
@@ -41,6 +43,20 @@ router.get(
   isAuthenticated,
   isAuthorized("Student"),
   getAvailableSupervisors,
+);
+
+router.get(
+  "/supervisor",
+  isAuthenticated,
+  isAuthorized("Student"),
+  getSupervisor,
+);
+
+router.post(
+  "/request-supervisor",
+  isAuthenticated,
+  isAuthorized("Student"),
+  requestSupervisor,
 );
 
 module.exports = router;

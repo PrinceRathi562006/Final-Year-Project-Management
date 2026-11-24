@@ -1,15 +1,18 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axios";
 
+const getErrorMessage = (error, fallback) =>
+  error.response?.data?.message || error.message || fallback;
+
 export const fetchStudentProject = createAsyncThunk(
   "student/fetchProject",
   async (_, thunkAPI) => {
     try {
-      const response = await axiosInstance.post("/student/project");
-      return response.data.data.project;
+      const response = await axiosInstance.get("/student/project");
+      return response.data.data?.project ?? null;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Could not load your proposal.",
+        getErrorMessage(error, "Could not load your project."),
       );
     }
   },
@@ -23,10 +26,10 @@ export const submitProposal = createAsyncThunk(
         "/student/project-proposal",
         proposal,
       );
-      return response.data.data.project;
+      return response.data.data?.project ?? null;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Your proposal could not be submitted.",
+        getErrorMessage(error, "Your proposal could not be submitted."),
       );
     }
   },
@@ -37,36 +40,80 @@ export const fetchAvailableSupervisors = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axiosInstance.get("/student/fetch-supervisors");
-      return response.data.data.supervisors || [];
+      return response.data.data?.supervisors ?? [];
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Could not load the supervisor directory.",
+        getErrorMessage(error, "Could not load the supervisor directory."),
       );
     }
   },
 );
 
+export const fetchProject = fetchStudentProject;
+export const fetchAllSupervisors = fetchAvailableSupervisors;
+
+export const getSupervisor = createAsyncThunk(
+  "student/getSupervisor",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get("/student/supervisor");
+      return response.data.data?.supervisor ?? null;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        getErrorMessage(error, "Could not load your supervisor."),
+      );
+    }
+  },
+);
+
+export const requestSupervisor = createAsyncThunk(
+  "student/requestSupervisor",
+  async (request, thunkAPI) => {
+    try {
+      const response = await axiosInstance.post(
+        "/student/request-supervisor",
+        request,
+      );
+      return response.data.data?.request ?? null;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        getErrorMessage(error, "Could not send your supervisor request."),
+      );
+    }
+  },
+);
+
+const initialState = {
+  project: null,
+  files: [],
+  supervisors: [],
+  dashboardStats: null,
+  supervisor: null,
+  supervisorRequest: null,
+  deadlines: [],
+  feedback: [],
+  status: null,
+  isLoadingProject: false,
+  isSubmittingProposal: false,
+  projectError: null,
+  proposalError: null,
+  isLoadingSupervisors: false,
+  supervisorsError: null,
+  isLoadingSupervisor: false,
+  supervisorError: null,
+  isRequestingSupervisor: false,
+  supervisorRequestError: null,
+};
+
 const studentSlice = createSlice({
   name: "student",
-  initialState: {
-    project: null,
-    files: [],
-    supervisors: [],
-    dashboardStats: [],
-    supervisor: null,
-    deadlines: [],
-    feedback: [],
-    status: null,
-    isLoadingProject: false,
-    isSubmittingProposal: false,
-    projectError: null,
-    proposalError: null,
-    isLoadingSupervisors: false,
-    supervisorsError: null,
-  },
+  initialState,
   reducers: {
     clearProposalError(state) {
       state.proposalError = null;
+    },
+    clearSupervisorRequestError(state) {
+      state.supervisorRequestError = null;
     },
   },
   extraReducers: (builder) => {
@@ -81,7 +128,7 @@ const studentSlice = createSlice({
       })
       .addCase(fetchStudentProject.rejected, (state, action) => {
         state.isLoadingProject = false;
-        state.projectError = action.payload;
+        state.projectError = action.payload || "Could not load your project.";
       })
       .addCase(submitProposal.pending, (state) => {
         state.isSubmittingProposal = true;
@@ -93,7 +140,7 @@ const studentSlice = createSlice({
       })
       .addCase(submitProposal.rejected, (state, action) => {
         state.isSubmittingProposal = false;
-        state.proposalError = action.payload;
+        state.proposalError = action.payload || "Your proposal could not be submitted.";
       })
       .addCase(fetchAvailableSupervisors.pending, (state) => {
         state.isLoadingSupervisors = true;
@@ -105,11 +152,35 @@ const studentSlice = createSlice({
       })
       .addCase(fetchAvailableSupervisors.rejected, (state, action) => {
         state.isLoadingSupervisors = false;
-        state.supervisorsError = action.payload;
+        state.supervisorsError = action.payload || "Could not load the supervisor directory.";
+      })
+      .addCase(getSupervisor.pending, (state) => {
+        state.isLoadingSupervisor = true;
+        state.supervisorError = null;
+      })
+      .addCase(getSupervisor.fulfilled, (state, action) => {
+        state.isLoadingSupervisor = false;
+        state.supervisor = action.payload;
+      })
+      .addCase(getSupervisor.rejected, (state, action) => {
+        state.isLoadingSupervisor = false;
+        state.supervisorError = action.payload || "Could not load your supervisor.";
+      })
+      .addCase(requestSupervisor.pending, (state) => {
+        state.isRequestingSupervisor = true;
+        state.supervisorRequestError = null;
+      })
+      .addCase(requestSupervisor.fulfilled, (state, action) => {
+        state.isRequestingSupervisor = false;
+        state.supervisorRequest = action.payload;
+      })
+      .addCase(requestSupervisor.rejected, (state, action) => {
+        state.isRequestingSupervisor = false;
+        state.supervisorRequestError = action.payload || "Could not send your supervisor request.";
       });
   },
 });
 
-export const { clearProposalError } = studentSlice.actions;
+export const { clearProposalError, clearSupervisorRequestError } = studentSlice.actions;
 
 export default studentSlice.reducer;

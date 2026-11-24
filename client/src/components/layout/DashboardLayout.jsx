@@ -22,6 +22,7 @@ const adminNavigation = [
 const studentNavigation = [
   { to: "/student", label: "Home", end: true },
   { to: "/student/submit-proposal", label: "Proposal" },
+  { to: "/student/supervisor", label: "Supervisors" },
   { to: "/student/upload-files", label: "Upload" },
 ];
 

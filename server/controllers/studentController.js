@@ -1,9 +1,9 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const { ErrorHandler } = require("../middlewares/error");
 const User = require("../models/User.js");
-const userServices = require("../services/userServices");
-const mongoose = require("mongoose");
 const projectService = require("../services/projectServices.js");
+const requestService = require("../services/requestServices.js");
+const notificationService = require("../services/notificationServices.js");
 
 const getStudentProject = asyncHandler(async (req, res, next) => {
   const studentId = req.user._id;
@@ -91,6 +91,10 @@ const getSupervisor = asyncHandler(async (req, res, next) => {
   const studentId = req.user._id;
   const student = await User.findById(studentId).populate("supervisor", "name email department experties");
 
+  if (!student) {
+    return next(new ErrorHandler("Student not found", 404));
+  }
+
   if(!student.supervisor){
     return res.status(200).json({
       success: true,
@@ -111,9 +115,44 @@ const requestSupervisor = asyncHandler(async (req, res, next) => {
 
   const student = await User.findById(studentId);
 
+  if (!student) {
+    return next(new ErrorHandler("Student not found", 404));
+  }
+
   if(student.supervisor){
     return next(new ErrorHandler("You already have a supervisor assigned", 400));
   }
+
+  const supervisor = await User.findById(teacherId);
+  if(!supervisor || supervisor.role !== "Teacher"){
+    return next(new ErrorHandler("Invalid supervisor selected.", 400));
+  }
+
+  if((supervisor.assignedStudents || []).length >= supervisor.maxStudents){
+    return next(new ErrorHandler("Selected supervisor has reached maximum student capacity.", 400));
+  }
+
+  const requestData = {
+    student: studentId,
+    supervisor: teacherId,
+    message,
+  }
+
+  const request = await requestService.createRequest(requestData);
+
+  await notificationService.notifyUser(
+    teacherId,
+    `${student.name} has requested ${supervisor.name} as their supervisor.`,
+    "request",
+    "/teacher/requests",
+    "medium"
+  );
+
+  return res.status(201).json({
+    success: true,
+    data: { request },
+    message: "Supervisor request sent successfully",
+  });
 })
 
-module.exports = { getStudentProject, submitProposal, uploadFiles, getAvailableSupervisors };
+module.exports = { getStudentProject, submitProposal, uploadFiles, getAvailableSupervisors, getSupervisor, requestSupervisor };

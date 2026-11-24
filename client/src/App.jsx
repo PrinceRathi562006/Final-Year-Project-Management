@@ -18,6 +18,10 @@ const ManageTeachers = lazy(() => import("./pages/admin/ManageTeachers"));
 const AssignSupervisor = lazy(() => import("./pages/admin/AssignSupervisor"));
 const DeadlinesPage = lazy(() => import("./pages/admin/DeadlinesPage"));
 const ProjectsPage = lazy(() => import("./pages/admin/ProjectsPage"));
+const TeacherDashboard = lazy(() => import("./pages/teacher/TeacherDashboard"));
+const PendingRequests = lazy(() => import("./pages/teacher/PendingRequests"));
+const AssignedStudents = lazy(() => import("./pages/teacher/AssignedStudents"));
+const TeacherFiles = lazy(() => import("./pages/teacher/TeacherFiles"));
 const StudentDashboard = lazy(() => import("./pages/student/StudentDashboard"));
 const SubmitProposal = lazy(() => import("./pages/student/SubmitProposal"));
 const UploadFiles = lazy(() => import("./pages/student/UploadFiles"));
@@ -30,6 +34,15 @@ import { ToastContainer } from "react-toastify";
 import { Loader } from "lucide-react";
 import BowArrowClickEffect from "./components/BowArrowClickEffect";
 import { getAllUsers } from "./store/slices/adminSlice";
+
+const getDashboardPath = (role) => {
+  switch (role) {
+    case "Admin": return "/admin";
+    case "Teacher": return "/teacher";
+    case "Student": return "/student";
+    default: return "/login";
+  }
+};
 
 const App = () => {
   const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
@@ -45,7 +58,7 @@ const App = () => {
     if(authUser?.role === "Admin"){
       dispatch(getAllUsers());
     }
-  });
+  }, [authUser?.role, dispatch]);
 
   const ProtectedRoute = ({ children, allowedRoles }) => {
     if (!authUser) {
@@ -57,14 +70,7 @@ const App = () => {
       authUser?.role &&
       !allowedRoles.includes(authUser.role)
     ) {
-      const redirectPath =
-        authUser.role === "Admin"
-          ? "/admin"
-          : authUser.role === "Teacher"
-            ? "/teacher"
-            : "/student";
-
-            return <Navigate to={redirectPath} replace/>
+      return <Navigate to={getDashboardPath(authUser.role)} replace />;
     }
 
     return children;
@@ -83,6 +89,8 @@ const App = () => {
       <BowArrowClickEffect />
       <Suspense fallback={<div className="route-loading" role="status" aria-live="polite"><Loader className="route-loading__icon" aria-hidden="true" /><span>Opening workspace…</span></div>}>
       <Routes>
+        <Route path="/" element={<Navigate to={authUser ? getDashboardPath(authUser.role) : "/login"} replace />} />
+
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/forgot-password" element={<ForgotPasswordPage />}></Route>
@@ -106,6 +114,20 @@ const App = () => {
         </Route>
 
         <Route
+          path="/teacher"
+          element={
+            <ProtectedRoute allowedRoles={["Teacher"]}>
+              <DashboardLayout userRole="Teacher" />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<TeacherDashboard />} />
+          <Route path="requests" element={<PendingRequests />} />
+          <Route path="students" element={<AssignedStudents />} />
+          <Route path="files" element={<TeacherFiles />} />
+        </Route>
+
+        <Route
           path="/student"
           element={
             <ProtectedRoute allowedRoles={["Student"]}>
@@ -120,6 +142,8 @@ const App = () => {
           <Route path="feedback" element={<FeedbackPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
         </Route>
+
+        <Route path="*" element={<Navigate to={authUser ? getDashboardPath(authUser.role) : "/login"} replace />} />
 
       </Routes>
       </Suspense>
