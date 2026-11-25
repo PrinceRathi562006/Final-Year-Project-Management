@@ -48,8 +48,7 @@ const projectSchema = new mongoose.Schema({
             },
         }
     ],
-    feedback: [
-        {
+    feedback: [new mongoose.Schema({
             supervisorId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
@@ -69,8 +68,7 @@ const projectSchema = new mongoose.Schema({
                 required: true,
                 maxlength: [1000, "Feedback message cannot more than 1000 characters"]
             },
-        },
-    ],
+        }, { timestamps: true })],
     deadline: {
         type: Date,
     }

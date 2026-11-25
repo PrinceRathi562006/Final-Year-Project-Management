@@ -4,16 +4,20 @@ const {
   submitProposal,
   uploadFiles,
   getProjectFile,
+  downloadFile,
   deleteProjectFile,
   getAvailableSupervisors,
   getSupervisor,
   requestSupervisor,
+  getFeedback,
+  getDashboardStats,
+  getStudentNotifications,
 } = require("../controllers/studentController.js");
 const {
   isAuthenticated,
   isAuthorized,
 } = require("../middlewares/authMiddleware.js");
-const {upload, handleUploadError} = require("../middlewares/upload.js");
+const { upload, handleUploadError } = require("../middlewares/upload.js");
 
 const router = express.Router();
 
@@ -47,6 +51,13 @@ router.get(
   getProjectFile,
 );
 
+router.get(
+  "/project/:projectId/files/:fileId/download",
+  isAuthenticated,
+  isAuthorized("Student"),
+  downloadFile,
+);
+
 router.delete(
   "/project/:projectId/files/:fileId",
   isAuthenticated,
@@ -73,6 +84,27 @@ router.post(
   isAuthenticated,
   isAuthorized("Student"),
   requestSupervisor,
+);
+
+router.get(
+  "/feedback/:projectId",
+  isAuthenticated,
+  isAuthorized("Student"),
+  getFeedback,
+);
+
+router.get(
+  "/fetch-dashboard-stats",
+  isAuthenticated,
+  isAuthorized("Student"),
+  getDashboardStats,
+);
+
+router.get(
+  "/notifications",
+  isAuthenticated,
+  isAuthorized("Student"),
+  getStudentNotifications,
 );
 
 module.exports = router;

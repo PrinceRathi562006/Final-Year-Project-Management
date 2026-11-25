@@ -1,4 +1,4 @@
-const { Notification } = require("../models/notification.js");
+const Notification = require("../models/notification.js");
 
 const createNotification = async (notificationData) => {
     const notification = new Notification(notificationData);

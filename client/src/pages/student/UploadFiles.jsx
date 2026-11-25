@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { createElement, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { axiosInstance } from "../../lib/axios";
@@ -59,9 +59,33 @@ function formatDate(value) {
 
 function fileIcon(fileName) {
   const extension = getExtension(fileName);
+  if (extension === ".pdf") return FileText;
+  if ([".ppt", ".pptx"].includes(extension)) return Presentation;
+  if ([".doc", ".docx"].includes(extension)) return FileText;
+  if ([".zip", ".rar", ".tar"].includes(extension)) return FileArchive;
   if ([".jpg", ".jpeg", ".png", ".gif"].includes(extension)) return FileImage;
-  if ([".zip", ".rar"].includes(extension)) return FileArchive;
+  if ([".js", ".css", ".html", ".json"].includes(extension)) return FileCode2;
   return FileText;
+}
+
+function fileIconClass(fileName) {
+  const extension = getExtension(fileName);
+  if (extension === ".pdf") return "pdf";
+  if ([".ppt", ".pptx"].includes(extension)) return "presentation";
+  if ([".doc", ".docx"].includes(extension)) return "document";
+  if ([".zip", ".rar", ".tar"].includes(extension)) return "archive";
+  if ([".jpg", ".jpeg", ".png", ".gif"].includes(extension)) return "image";
+  if ([".js", ".css", ".html", ".json"].includes(extension)) return "code";
+  return "text";
+}
+
+function FileTypeIcon({ fileName, size = 18 }) {
+  const Icon = fileIcon(fileName);
+  const extension = getExtension(fileName).replace(".", "").slice(0, 4).toUpperCase() || "FILE";
+  return <span className={`file-type-icon file-type-icon--${fileIconClass(fileName)}`} aria-hidden="true">
+    <Icon size={size} strokeWidth={1.9} />
+    <small>{extension}</small>
+  </span>;
 }
 
 export default function UploadFiles() {
@@ -152,7 +176,7 @@ export default function UploadFiles() {
 
     try {
       const response = await axiosInstance.get(
-        `/student/project/${encodeURIComponent(project._id)}/files/${encodeURIComponent(file._id)}`,
+        `/student/project/${encodeURIComponent(project._id)}/files/${encodeURIComponent(file._id)}${mode === "download" ? "/download" : ""}`,
         { responseType: "blob" },
       );
       const objectUrl = URL.createObjectURL(response.data);
@@ -245,7 +269,7 @@ export default function UploadFiles() {
                       onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsDragging(false); }}
                       onDrop={(event) => { event.preventDefault(); setIsDragging(false); addFiles(Array.from(event.dataTransfer.files)); }}
                     >
-                      <Icon className="upload-file-section__icon" size={27} strokeWidth={1.8} />
+                      {createElement(Icon, { className: "upload-file-section__icon", size: 27, strokeWidth: 1.8 })}
                       <strong>{title}</strong>
                       <small>{description}</small>
                       <button type="button" onClick={() => openSectionPicker({ id })} disabled={isUploadingFiles}>Choose File</button>
@@ -263,8 +287,7 @@ export default function UploadFiles() {
                 <small className="upload-file-guidance">Up to {MAX_FILES} files total · 10 MB per file</small>
 
                 {selectedFiles.length > 0 && <div className="upload-queue"><div className="upload-queue__heading"><span>Ready to Upload</span><b>{selectedFiles.length}/{MAX_FILES}</b></div>{selectedFiles.map((file) => {
-                  const Icon = fileIcon(file.name);
-                  return <div className="upload-queue__item" key={`${file.name}-${file.size}-${file.lastModified}`}><span className="upload-queue__icon"><Icon size={16} /></span><span className="upload-queue__name"><strong>{file.name}</strong><small>{formatBytes(file.size)}</small></span><button type="button" onClick={() => removeFile(file)} disabled={isUploadingFiles} aria-label={`Remove ${file.name}`}>Remove</button></div>;
+                  return <div className="upload-queue__item" key={`${file.name}-${file.size}-${file.lastModified}`}><FileTypeIcon fileName={file.name} /><span className="upload-queue__name"><strong>{file.name}</strong><small>{formatBytes(file.size)}</small></span><button type="button" onClick={() => removeFile(file)} disabled={isUploadingFiles} aria-label={`Remove ${file.name}`}>Remove</button></div>;
                 })}</div>}
 
                 {(localError || uploadError) && <div className="upload-files-message upload-files-message--error" role="alert"><CircleHelp size={16} /><span>{localError || uploadError}</span></div>}
@@ -285,16 +308,15 @@ export default function UploadFiles() {
 
         {project && <section className="upload-files-saved" aria-labelledby="saved-files-heading">
           <header><div><span className="upload-files-page__eyebrow">PROJECT ARCHIVE</span><h2 id="saved-files-heading">Shared files</h2></div><span className="upload-files-saved__count">{savedFiles.length} {savedFiles.length === 1 ? "FILE" : "FILES"}</span></header>
-          {fileActionError && <div className="upload-files-message upload-files-message--error" role="alert"><CircleHelp size={16} /><span>{fileActionError}</span></div>}
+          {fileActionError && !pendingDeleteFile && <div className="upload-files-message upload-files-message--error" role="alert"><CircleHelp size={16} /><span>{fileActionError}</span></div>}
           {pendingDeleteFile && <div className="upload-delete-confirm" role="alertdialog" aria-modal="false" aria-labelledby="upload-delete-title" aria-describedby="upload-delete-description">
             <span className="upload-delete-confirm__icon"><Trash2 size={18} /></span>
             <div className="upload-delete-confirm__copy"><strong id="upload-delete-title">Delete this project file?</strong><span id="upload-delete-description">“{pendingDeleteFile.originalName || "Project file"}” will be removed from your project archive.</span></div>
             <div className="upload-delete-confirm__actions"><button type="button" onClick={() => setPendingDeleteFile(null)} disabled={Boolean(fileAction)}>Keep file</button><button type="button" onClick={() => handleDeleteFile(pendingDeleteFile)} disabled={Boolean(fileAction)}>{fileAction?.mode === "delete" ? <><LoaderCircle className="upload-files-state__spin" size={14} /> Deleting…</> : "Delete file"}</button></div>
           </div>}
           {savedFiles.length ? <ul>{savedFiles.map((file, index) => {
-            const Icon = fileIcon(file.originalName);
             const isFileActionActive = fileAction?.fileId === file._id;
-            return <li key={file._id || `${file.originalName}-${file.uploadedAt || index}`}><span className="upload-files-saved__icon"><Icon size={16} /></span><span className="upload-files-saved__name"><strong>{file.originalName || "Project file"}</strong><small>{formatDate(file.uploadedAt)} · {file.fileType || "File"}</small></span><span className="upload-files-saved__actions"><button type="button" onClick={() => handleSavedFileAction(file, "view")} disabled={!file._id || Boolean(fileAction)} title="View file" aria-label={`View ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "view" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Eye size={15} />}</button><button type="button" onClick={() => handleSavedFileAction(file, "download")} disabled={!file._id || Boolean(fileAction)} title="Download file" aria-label={`Download ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "download" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Download size={15} />}</button><button type="button" onClick={() => { setFileActionError(""); setPendingDeleteFile(file); }} disabled={!file._id || Boolean(fileAction)} title="Delete file" aria-label={`Delete ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "delete" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Trash2 size={15} />}</button></span></li>;
+            return <li key={file._id || `${file.originalName}-${file.uploadedAt || index}`}><span className="upload-files-saved__icon"><FileTypeIcon fileName={file.originalName || ""} size={18} /></span><span className="upload-files-saved__name"><strong>{file.originalName || "Project file"}</strong><small>{formatDate(file.uploadedAt)} · {file.fileType || "File"}</small></span><span className="upload-files-saved__actions"><button type="button" onClick={() => handleSavedFileAction(file, "view")} disabled={!file._id || Boolean(fileAction)} title="View file" aria-label={`View ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "view" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Eye size={15} />}</button><button type="button" onClick={() => handleSavedFileAction(file, "download")} disabled={!file._id || Boolean(fileAction)} title="Download file" aria-label={`Download ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "download" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Download size={15} />}</button><button type="button" onClick={() => { setFileActionError(""); setPendingDeleteFile(file); }} disabled={!file._id || Boolean(fileAction)} title="Delete file" aria-label={`Delete ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "delete" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Trash2 size={15} />}</button></span></li>;
           })}</ul> : <p className="upload-files-saved__empty">Files you upload will appear here.</p>}
         </section>}
 

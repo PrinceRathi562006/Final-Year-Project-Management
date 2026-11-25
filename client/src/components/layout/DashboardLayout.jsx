@@ -24,6 +24,8 @@ const studentNavigation = [
   { to: "/student/submit-proposal", label: "Proposal" },
   { to: "/student/supervisor", label: "Supervisors" },
   { to: "/student/upload-files", label: "Upload" },
+  { to: "/student/feedback", label: "Feedback" },
+  { to: "/student/notifications", label: "Notifications" },
 ];
 
 const DashboardLayout = ({ userRole }) => {

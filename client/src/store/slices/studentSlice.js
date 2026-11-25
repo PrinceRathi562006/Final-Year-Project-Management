@@ -18,6 +18,38 @@ export const fetchStudentProject = createAsyncThunk(
   },
 );
 
+export const fetchStudentDashboardStats = createAsyncThunk(
+  "student/fetchDashboardStats",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get("/student/fetch-dashboard-stats");
+      return response.data.data ?? {};
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        getErrorMessage(error, "Could not load your student dashboard."),
+      );
+    }
+  },
+);
+
+export const fetchStudentFeedback = createAsyncThunk(
+  "student/fetchFeedback",
+  async (projectId, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get(`/student/feedback/${encodeURIComponent(projectId)}`);
+      return {
+        projectId,
+        feedback: response.data.data?.feedback ?? [],
+        project: response.data.data?.project ?? null,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        getErrorMessage(error, "Could not load project feedback."),
+      );
+    }
+  },
+);
+
 export const submitProposal = createAsyncThunk(
   "student/submitProposal",
   async (proposal, thunkAPI) => {
@@ -109,10 +141,15 @@ const initialState = {
   files: [],
   supervisors: [],
   dashboardStats: null,
+  isLoadingDashboardStats: false,
+  dashboardStatsError: null,
+  feedback: [],
+  feedbackProject: null,
+  isLoadingFeedback: false,
+  feedbackError: null,
   supervisor: null,
   supervisorRequest: null,
   deadlines: [],
-  feedback: [],
   status: null,
   isLoadingProject: false,
   isSubmittingProposal: false,
@@ -155,6 +192,39 @@ const studentSlice = createSlice({
       .addCase(fetchStudentProject.rejected, (state, action) => {
         state.isLoadingProject = false;
         state.projectError = action.payload || "Could not load your project.";
+      })
+      .addCase(fetchStudentDashboardStats.pending, (state) => {
+        state.isLoadingProject = true;
+        state.isLoadingDashboardStats = true;
+        state.projectError = null;
+        state.dashboardStatsError = null;
+      })
+      .addCase(fetchStudentDashboardStats.fulfilled, (state, action) => {
+        state.isLoadingProject = false;
+        state.isLoadingDashboardStats = false;
+        state.dashboardStats = action.payload;
+        state.project = action.payload.project ?? null;
+      })
+      .addCase(fetchStudentDashboardStats.rejected, (state, action) => {
+        state.isLoadingProject = false;
+        state.isLoadingDashboardStats = false;
+        state.projectError = action.payload || "Could not load your student dashboard.";
+        state.dashboardStatsError = state.projectError;
+      })
+      .addCase(fetchStudentFeedback.pending, (state) => {
+        state.isLoadingFeedback = true;
+        state.feedbackError = null;
+        state.feedback = [];
+        state.feedbackProject = null;
+      })
+      .addCase(fetchStudentFeedback.fulfilled, (state, action) => {
+        state.isLoadingFeedback = false;
+        state.feedback = action.payload.feedback;
+        state.feedbackProject = action.payload.project;
+      })
+      .addCase(fetchStudentFeedback.rejected, (state, action) => {
+        state.isLoadingFeedback = false;
+        state.feedbackError = action.payload || "Could not load project feedback.";
       })
       .addCase(submitProposal.pending, (state) => {
         state.isSubmittingProposal = true;

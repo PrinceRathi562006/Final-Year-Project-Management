@@ -16,7 +16,7 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
-import { fetchStudentProject } from "../../store/slices/studentSlice";
+import { fetchStudentDashboardStats } from "../../store/slices/studentSlice";
 import "./StudentDashboard.css";
 
 const statusDetails = {
@@ -40,17 +40,21 @@ function getFirstName(name) {
 export default function StudentDashboard() {
   const dispatch = useDispatch();
   const { authUser } = useSelector((state) => state.auth || {});
-  const { project, isLoadingProject, projectError } = useSelector((state) => state.student || {});
+  const { project, dashboardStats, isLoadingProject, projectError } = useSelector((state) => state.student || {});
 
   useEffect(() => {
-    dispatch(fetchStudentProject());
+    dispatch(fetchStudentDashboardStats());
   }, [dispatch]);
 
   const status = project ? (statusDetails[project.status] || statusDetails.pending) : null;
   const StatusIcon = status?.icon;
   const files = project?.files || [];
   const feedback = project?.feedback || [];
-  const latestFeedback = feedback.at(-1);
+  const latestFeedback = [...feedback].sort((a, b) => {
+    const aDate = new Date(a.createdAt || 0).getTime();
+    const bDate = new Date(b.createdAt || 0).getTime();
+    return bDate - aDate || feedback.indexOf(b) - feedback.indexOf(a);
+  })[0];
   const needsProposal = !project || project.status === "rejected";
   const steps = [
     { label: "Share your idea", detail: project ? "Proposal submitted" : "Write a project proposal", done: Boolean(project), to: "/student/submit-proposal", icon: Lightbulb },
@@ -82,7 +86,7 @@ export default function StudentDashboard() {
           <article className="student-home__metric"><span className="student-home__metric-icon"><MessageSquareText size={17} /></span><span><small>FEEDBACK NOTES</small><strong>{feedback.length} {feedback.length === 1 ? "note" : "notes"}</strong></span></article>
         </section>
 
-        {projectError && <div className="student-home__error" role="alert"><span>{projectError}</span><button type="button" onClick={() => dispatch(fetchStudentProject())} disabled={isLoadingProject}>{isLoadingProject ? "Retrying..." : "Retry"}</button></div>}
+        {projectError && <div className="student-home__error" role="alert"><span>{projectError}</span><button type="button" onClick={() => dispatch(fetchStudentDashboardStats())} disabled={isLoadingProject}>{isLoadingProject ? "Retrying..." : "Retry"}</button></div>}
 
         <div className="student-home__grid">
           <section className="student-home__project-panel" aria-labelledby="student-project-title">
@@ -121,6 +125,11 @@ export default function StudentDashboard() {
             <Link to="/student/notifications"><span><MessageSquareText size={17} /></span>Notifications<ArrowRight size={14} /></Link>
           </div>
         </section>
+
+        {(dashboardStats?.upcomingDeadlines?.length > 0 || dashboardStats?.topNotifications?.length > 0) && <section className="student-home__updates" aria-label="Upcoming deadlines and recent updates">
+          {dashboardStats?.upcomingDeadlines?.length > 0 && <div><span className="student-home__eyebrow">COMING UP</span><h2>Next deadlines</h2><ul>{dashboardStats.upcomingDeadlines.map((deadline) => <li key={deadline._id}><CalendarDays size={14} /><span><strong>{deadline.title}</strong><small>{formatDate(deadline.deadline)}</small></span></li>)}</ul></div>}
+          {dashboardStats?.topNotifications?.length > 0 && <div><span className="student-home__eyebrow">FROM YOUR WORKSPACE</span><h2>Recent updates</h2><ul>{dashboardStats.topNotifications.map((notification) => <li key={notification._id}><MessageSquareText size={14} /><span><strong>{notification.message}</strong><small>{formatDate(notification.createdAt)}</small></span></li>)}</ul><Link to="/student/notifications">See all notifications <ArrowUpRight size={13} /></Link></div>}
+        </section>}
 
         <footer className="student-home__footer"><span>PROJECT HUB <i /> STUDENT FIELDNOTES</span><span>SMALL STEPS MAKE STRONG PROJECTS <ArrowUpRight size={13} /></span></footer>
       </div>
