@@ -4,6 +4,7 @@ const {
   submitProposal,
   uploadFiles,
   getProjectFile,
+  deleteProjectFile,
   getAvailableSupervisors,
   getSupervisor,
   requestSupervisor,
@@ -44,6 +45,13 @@ router.get(
   isAuthenticated,
   isAuthorized("Student"),
   getProjectFile,
+);
+
+router.delete(
+  "/project/:projectId/files/:fileId",
+  isAuthenticated,
+  isAuthorized("Student"),
+  deleteProjectFile,
 );
 
 router.get(

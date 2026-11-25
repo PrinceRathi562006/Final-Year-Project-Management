@@ -14,8 +14,11 @@ import {
   FileImage,
   FileText,
   FolderUp,
+  Presentation,
+  FileCode2,
   LoaderCircle,
   Paperclip,
+  Trash2,
   Upload,
   X,
 } from "lucide-react";
@@ -29,10 +32,14 @@ import "./UploadFiles.css";
 const MAX_FILES = 10;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_EXTENSIONS = new Set([
-  ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".zip", ".rar",
+  ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".zip", ".rar", ".tar",
   ".jpg", ".jpeg", ".png", ".gif", ".txt", ".js", ".css", ".html", ".json",
 ]);
-const ACCEPT_ATTRIBUTE = [...ACCEPTED_EXTENSIONS].join(",");
+const FILE_SECTIONS = [
+  { id: "report", title: "Report", description: "Upload your project report (PDF, DOC)", extensions: [".pdf", ".doc", ".docx"], Icon: FileText },
+  { id: "presentation", title: "Presentation", description: "Upload your presentation (PPT, PPTX, PDF)", extensions: [".ppt", ".pptx", ".pdf"], Icon: Presentation },
+  { id: "code", title: "Code Files", description: "Upload your source code (ZIP, RAR, TAR)", extensions: [".zip", ".rar", ".tar", ".js", ".css", ".html", ".json"], Icon: FileCode2 },
+];
 
 function getExtension(name = "") {
   return name.includes(".") ? `.${name.split(".").pop().toLowerCase()}` : "";
@@ -59,7 +66,7 @@ function fileIcon(fileName) {
 
 export default function UploadFiles() {
   const dispatch = useDispatch();
-  const inputRef = useRef(null);
+  const sectionInputRefs = useRef({});
   const { project, isLoadingProject, projectError, isUploadingFiles, uploadError } = useSelector((state) => state.student || {});
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -67,6 +74,7 @@ export default function UploadFiles() {
   const [successMessage, setSuccessMessage] = useState("");
   const [fileAction, setFileAction] = useState(null);
   const [fileActionError, setFileActionError] = useState("");
+  const [pendingDeleteFile, setPendingDeleteFile] = useState(null);
 
   useEffect(() => {
     dispatch(fetchStudentProject());
@@ -100,7 +108,11 @@ export default function UploadFiles() {
     }
     setSelectedFiles((current) => [...current, ...uniqueFiles.slice(0, availableSlots)]);
     setLocalError(errors.join(" "));
-    if (inputRef.current) inputRef.current.value = "";
+  };
+
+  const openSectionPicker = (section) => {
+    const input = sectionInputRefs.current[section.id];
+    if (input) input.click();
   };
 
   const removeFile = (fileToRemove) => {
@@ -172,6 +184,26 @@ export default function UploadFiles() {
     }
   };
 
+  const handleDeleteFile = async (file) => {
+    if (!project?._id || !file?._id || fileAction) return;
+
+    setFileAction({ fileId: file._id, mode: "delete" });
+    setFileActionError("");
+    setSuccessMessage("");
+    try {
+      await axiosInstance.delete(
+        `/student/project/${encodeURIComponent(project._id)}/files/${encodeURIComponent(file._id)}`,
+      );
+      await dispatch(fetchStudentProject()).unwrap();
+      setPendingDeleteFile(null);
+      setSuccessMessage(`${file.originalName || "File"} was deleted from your project.`);
+    } catch (error) {
+      setFileActionError(error.response?.data?.message || "The file could not be deleted.");
+    } finally {
+      setFileAction(null);
+    }
+  };
+
   const savedFiles = project?.files || [];
 
   return (
@@ -204,26 +236,35 @@ export default function UploadFiles() {
               <div className="upload-files-project"><span><FileText size={15} /></span><div><small>UPLOADING TO</small><strong>{project.title}</strong></div></div>
 
               <form onSubmit={handleSubmit}>
-                <button
-                  className={`upload-dropzone${isDragging ? " is-dragging" : ""}`}
-                  type="button"
-                  onClick={() => inputRef.current?.click()}
-                  onDragOver={(event) => { event.preventDefault(); setIsDragging(true); }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={(event) => { event.preventDefault(); setIsDragging(false); addFiles(Array.from(event.dataTransfer.files)); }}
-                  aria-label="Choose files or drop files here"
-                  disabled={isUploadingFiles}
-                >
-                  <span className="upload-dropzone__icon"><FolderUp size={22} /></span>
-                  <strong>Drop files here, or <i>browse</i></strong>
-                  <small>PDF, Word, PowerPoint, archives, images, and code files</small>
-                  <small>Up to {MAX_FILES} files · 10 MB per file</small>
-                </button>
-                <input ref={inputRef} className="upload-files-visually-hidden" type="file" multiple accept={ACCEPT_ATTRIBUTE} onChange={(event) => addFiles(Array.from(event.target.files || []))} />
+                <div className="upload-file-sections">
+                  {FILE_SECTIONS.map(({ id, title, description, extensions, Icon }) => (
+                    <section
+                      className={`upload-file-section${isDragging ? " is-dragging" : ""}`}
+                      key={id}
+                      onDragOver={(event) => { event.preventDefault(); setIsDragging(id); }}
+                      onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsDragging(false); }}
+                      onDrop={(event) => { event.preventDefault(); setIsDragging(false); addFiles(Array.from(event.dataTransfer.files)); }}
+                    >
+                      <Icon className="upload-file-section__icon" size={27} strokeWidth={1.8} />
+                      <strong>{title}</strong>
+                      <small>{description}</small>
+                      <button type="button" onClick={() => openSectionPicker({ id })} disabled={isUploadingFiles}>Choose File</button>
+                      <input
+                        ref={(element) => { sectionInputRefs.current[id] = element; }}
+                        className="upload-files-visually-hidden"
+                        type="file"
+                        multiple
+                        accept={extensions.join(",")}
+                        onChange={(event) => { addFiles(Array.from(event.target.files || [])); event.target.value = ""; }}
+                      />
+                    </section>
+                  ))}
+                </div>
+                <small className="upload-file-guidance">Up to {MAX_FILES} files total · 10 MB per file</small>
 
-                {selectedFiles.length > 0 && <div className="upload-queue"><div className="upload-queue__heading"><span>READY TO UPLOAD</span><b>{selectedFiles.length}/{MAX_FILES}</b></div>{selectedFiles.map((file) => {
+                {selectedFiles.length > 0 && <div className="upload-queue"><div className="upload-queue__heading"><span>Ready to Upload</span><b>{selectedFiles.length}/{MAX_FILES}</b></div>{selectedFiles.map((file) => {
                   const Icon = fileIcon(file.name);
-                  return <div className="upload-queue__item" key={`${file.name}-${file.size}-${file.lastModified}`}><span className="upload-queue__icon"><Icon size={16} /></span><span className="upload-queue__name"><strong>{file.name}</strong><small>{formatBytes(file.size)}</small></span><button type="button" onClick={() => removeFile(file)} disabled={isUploadingFiles} aria-label={`Remove ${file.name}`}><X size={15} /></button></div>;
+                  return <div className="upload-queue__item" key={`${file.name}-${file.size}-${file.lastModified}`}><span className="upload-queue__icon"><Icon size={16} /></span><span className="upload-queue__name"><strong>{file.name}</strong><small>{formatBytes(file.size)}</small></span><button type="button" onClick={() => removeFile(file)} disabled={isUploadingFiles} aria-label={`Remove ${file.name}`}>Remove</button></div>;
                 })}</div>}
 
                 {(localError || uploadError) && <div className="upload-files-message upload-files-message--error" role="alert"><CircleHelp size={16} /><span>{localError || uploadError}</span></div>}
@@ -245,10 +286,15 @@ export default function UploadFiles() {
         {project && <section className="upload-files-saved" aria-labelledby="saved-files-heading">
           <header><div><span className="upload-files-page__eyebrow">PROJECT ARCHIVE</span><h2 id="saved-files-heading">Shared files</h2></div><span className="upload-files-saved__count">{savedFiles.length} {savedFiles.length === 1 ? "FILE" : "FILES"}</span></header>
           {fileActionError && <div className="upload-files-message upload-files-message--error" role="alert"><CircleHelp size={16} /><span>{fileActionError}</span></div>}
+          {pendingDeleteFile && <div className="upload-delete-confirm" role="alertdialog" aria-modal="false" aria-labelledby="upload-delete-title" aria-describedby="upload-delete-description">
+            <span className="upload-delete-confirm__icon"><Trash2 size={18} /></span>
+            <div className="upload-delete-confirm__copy"><strong id="upload-delete-title">Delete this project file?</strong><span id="upload-delete-description">“{pendingDeleteFile.originalName || "Project file"}” will be removed from your project archive.</span></div>
+            <div className="upload-delete-confirm__actions"><button type="button" onClick={() => setPendingDeleteFile(null)} disabled={Boolean(fileAction)}>Keep file</button><button type="button" onClick={() => handleDeleteFile(pendingDeleteFile)} disabled={Boolean(fileAction)}>{fileAction?.mode === "delete" ? <><LoaderCircle className="upload-files-state__spin" size={14} /> Deleting…</> : "Delete file"}</button></div>
+          </div>}
           {savedFiles.length ? <ul>{savedFiles.map((file, index) => {
             const Icon = fileIcon(file.originalName);
             const isFileActionActive = fileAction?.fileId === file._id;
-            return <li key={file._id || `${file.originalName}-${file.uploadedAt || index}`}><span className="upload-files-saved__icon"><Icon size={16} /></span><span className="upload-files-saved__name"><strong>{file.originalName || "Project file"}</strong><small>{formatDate(file.uploadedAt)} · {file.fileType || "File"}</small></span><span className="upload-files-saved__actions"><button type="button" onClick={() => handleSavedFileAction(file, "view")} disabled={!file._id || Boolean(fileAction)} title="View file" aria-label={`View ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "view" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Eye size={15} />}</button><button type="button" onClick={() => handleSavedFileAction(file, "download")} disabled={!file._id || Boolean(fileAction)} title="Download file" aria-label={`Download ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "download" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Download size={15} />}</button></span></li>;
+            return <li key={file._id || `${file.originalName}-${file.uploadedAt || index}`}><span className="upload-files-saved__icon"><Icon size={16} /></span><span className="upload-files-saved__name"><strong>{file.originalName || "Project file"}</strong><small>{formatDate(file.uploadedAt)} · {file.fileType || "File"}</small></span><span className="upload-files-saved__actions"><button type="button" onClick={() => handleSavedFileAction(file, "view")} disabled={!file._id || Boolean(fileAction)} title="View file" aria-label={`View ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "view" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Eye size={15} />}</button><button type="button" onClick={() => handleSavedFileAction(file, "download")} disabled={!file._id || Boolean(fileAction)} title="Download file" aria-label={`Download ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "download" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Download size={15} />}</button><button type="button" onClick={() => { setFileActionError(""); setPendingDeleteFile(file); }} disabled={!file._id || Boolean(fileAction)} title="Delete file" aria-label={`Delete ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "delete" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Trash2 size={15} />}</button></span></li>;
           })}</ul> : <p className="upload-files-saved__empty">Files you upload will appear here.</p>}
         </section>}
 

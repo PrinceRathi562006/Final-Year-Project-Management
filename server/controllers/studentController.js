@@ -7,6 +7,18 @@ const projectService = require("../services/projectServices.js");
 const requestService = require("../services/requestServices.js");
 const notificationService = require("../services/notificationServices.js");
 
+const resolveProjectFilePath = (storedPath, projectId) => {
+  const uploadsRoot = path.resolve(__dirname, "../uploads");
+  const projectDirectory = path.resolve(uploadsRoot, "projects", projectId);
+  const filePath = path.resolve(storedPath);
+  const isInside = (directory, candidate) => candidate.startsWith(`${directory}${path.sep}`);
+
+  // Older uploads were stored directly in uploads/, before files were grouped by project.
+  if (isInside(projectDirectory, filePath)) return filePath;
+  if (path.dirname(filePath) === uploadsRoot) return filePath;
+  return null;
+};
+
 const getStudentProject = asyncHandler(async (req, res, next) => {
   const studentId = req.user._id;
 
@@ -92,9 +104,8 @@ const getProjectFile = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler("Project file not found", 404));
   }
 
-  const projectUploadDirectory = path.resolve(__dirname, "../uploads/projects", projectId);
-  const filePath = path.resolve(projectFile.fileUrl);
-  if (!filePath.startsWith(`${projectUploadDirectory}${path.sep}`)) {
+  const filePath = resolveProjectFilePath(projectFile.fileUrl, projectId);
+  if (!filePath) {
     return next(new ErrorHandler("Invalid project file location", 400));
   }
 
@@ -107,6 +118,42 @@ const getProjectFile = asyncHandler(async (req, res, next) => {
   res.type(projectFile.fileType || "application/octet-stream");
   return res.sendFile(filePath, (error) => {
     if (error && !res.headersSent) next(error);
+  });
+});
+
+const deleteProjectFile = asyncHandler(async (req, res, next) => {
+  const { projectId, fileId } = req.params;
+  const studentId = req.user._id;
+  const project = await projectService.getProjectById(projectId);
+  const projectStudentId = project.student?._id || project.student;
+
+  if (projectStudentId.toString() !== studentId.toString()) {
+    return next(new ErrorHandler("You are not authorized to delete files from this project", 403));
+  }
+
+  const projectFile = project.files.id(fileId);
+  if (!projectFile) {
+    return next(new ErrorHandler("Project file not found", 404));
+  }
+
+  const filePath = resolveProjectFilePath(projectFile.fileUrl, projectId);
+  if (!filePath) {
+    return next(new ErrorHandler("Invalid project file location", 400));
+  }
+
+  try {
+    await fs.promises.unlink(filePath);
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  project.files.pull(fileId);
+  await project.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Project file deleted successfully",
+    data: { project },
   });
 });
 
@@ -191,4 +238,4 @@ const requestSupervisor = asyncHandler(async (req, res, next) => {
   });
 })
 
-module.exports = { getStudentProject, submitProposal, uploadFiles, getProjectFile, getAvailableSupervisors, getSupervisor, requestSupervisor };
+module.exports = { getStudentProject, submitProposal, uploadFiles, getProjectFile, deleteProjectFile, getAvailableSupervisors, getSupervisor, requestSupervisor };
