@@ -10,6 +10,7 @@ import {
   Check,
   CalendarDays,
   CircleHelp,
+  FileText,
   GraduationCap,
   Mail,
   MessageSquareText,
@@ -170,7 +171,7 @@ export default function SupervisorPage() {
           ) : supervisorError ? (
             <div className="supervisor-detail-message supervisor-detail-message--error" role="alert"><CircleHelp size={16} /> {supervisorError}</div>
           ) : supervisor ? (
-            <div className="supervisor-current-person"><span className="supervisor-card__avatar">{getInitials(supervisor.name)}</span><div><strong>{supervisor.name}</strong><span>{supervisor.department || "Faculty member"}</span>{supervisor.email && <a href={`mailto:${supervisor.email}`}><Mail size={13} /> {supervisor.email}</a>}</div><span className="supervisor-current-person__badge"><Check size={13} /> Assigned</span></div>
+            <div className="supervisor-current-person"><span className="supervisor-current-person__avatar" aria-hidden="true">{getInitials(supervisor.name)}</span><div><strong>{supervisor.name}</strong><span>{supervisor.department || "Faculty member"}</span>{supervisor.email && <a href={`mailto:${supervisor.email}`}><small>EMAIL</small>{supervisor.email}</a>}</div><span className="supervisor-current-person__badge"><Check size={13} /> Assigned</span></div>
           ) : (
             <div className="supervisor-unassigned"><span>Supervisor not assigned yet.</span><a href="#faculty-directory">Explore faculty <ArrowUpRight size={14} /></a></div>
           )}

@@ -112,10 +112,12 @@
 .supervisor-detail-heading h2 { margin: 0; color: #39342b; font: 400 21px 'Instrument Serif',serif; }
 .supervisor-detail-loading { display: flex; min-height: 64px; align-items: center; justify-content: center; gap: 9px; color: #766e61; font: 9px 'DM Mono',monospace; }
 .supervisor-current-person { display: flex; align-items: center; gap: 12px; padding: 15px 2px 2px; }
+.supervisor-current-person__avatar { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border: 1px solid #d8cdbb; border-radius: 50%; background: linear-gradient(145deg,#f1e8d8,#e4ebdf); color: #536b58; font: 600 14px 'DM Sans',sans-serif; box-shadow: 0 3px 10px #302c2512; }
 .supervisor-current-person>div { display: grid; min-width: 0; gap: 4px; }
 .supervisor-current-person>div strong { overflow: hidden; color: #383329; text-overflow: ellipsis; white-space: nowrap; font: 400 22px 'Instrument Serif',serif; }
 .supervisor-current-person>div>span { color: #81796b; font-size: 10px; }
-.supervisor-current-person>div>a { display: inline-flex; align-items: center; gap: 5px; color: #586f61; text-decoration: none; font-size: 9px; }
+.supervisor-current-person>div>a { display: grid; justify-items: start; gap: 2px; color: #586f61; text-decoration: none; font-size: 9px; }
+.supervisor-current-person>div>a small { color: #8b806e; font: 7px 'DM Mono',monospace; letter-spacing: .06em; }
 .supervisor-current-person__badge { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; padding: 6px 9px; border: 1px solid #c8d0c2; background: #e9eee5; color: #536b58; font: 8px 'DM Mono',monospace; }
 .supervisor-unassigned { display: flex; min-height: 68px; align-items: center; justify-content: center; gap: 15px; color: #81796b; font-size: 11px; }
 .supervisor-unassigned a,.supervisor-project-empty a { display: inline-flex; align-items: center; gap: 5px; color: #586f61; text-decoration: none; font-size: 10px; font-weight: 650; }

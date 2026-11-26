@@ -1,6 +1,7 @@
 import { createElement, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { axiosInstance } from "../../lib/axios";
 import {
   ArrowLeft,
@@ -95,9 +96,8 @@ export default function UploadFiles() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [localError, setLocalError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [fileAction, setFileAction] = useState(null);
   const [fileActionError, setFileActionError] = useState("");
+  const [fileAction, setFileAction] = useState(null);
   const [pendingDeleteFile, setPendingDeleteFile] = useState(null);
 
   useEffect(() => {
@@ -106,7 +106,6 @@ export default function UploadFiles() {
 
   const addFiles = (incomingFiles) => {
     setLocalError("");
-    setSuccessMessage("");
     dispatch(clearUploadError());
     const validFiles = [];
     const errors = [];
@@ -141,13 +140,12 @@ export default function UploadFiles() {
 
   const removeFile = (fileToRemove) => {
     setSelectedFiles((current) => current.filter((file) => file !== fileToRemove));
-    setLocalError("");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!project?._id || selectedFiles.length === 0 || isUploadingFiles) return;
-    setSuccessMessage("");
+    setLocalError("");
     try {
       const updatedProject = await dispatch(uploadProjectFiles({
         projectId: project._id,
@@ -155,7 +153,7 @@ export default function UploadFiles() {
       })).unwrap();
       const submittedCount = selectedFiles.length;
       setSelectedFiles([]);
-      setSuccessMessage(`${submittedCount} ${submittedCount === 1 ? "file was" : "files were"} added to your project.`);
+      toast.success(`${submittedCount} ${submittedCount === 1 ? "file was" : "files were"} added to your project.`);
       if (!updatedProject) dispatch(fetchStudentProject());
     } catch {
       // Keep the selected files so the student can retry.
@@ -213,14 +211,13 @@ export default function UploadFiles() {
 
     setFileAction({ fileId: file._id, mode: "delete" });
     setFileActionError("");
-    setSuccessMessage("");
     try {
       await axiosInstance.delete(
         `/student/project/${encodeURIComponent(project._id)}/files/${encodeURIComponent(file._id)}`,
       );
       await dispatch(fetchStudentProject()).unwrap();
       setPendingDeleteFile(null);
-      setSuccessMessage(`${file.originalName || "File"} was deleted from your project.`);
+      toast.success(`${file.originalName || "File"} was deleted from your project.`);
     } catch (error) {
       setFileActionError(error.response?.data?.message || "The file could not be deleted.");
     } finally {
@@ -291,7 +288,6 @@ export default function UploadFiles() {
                 })}</div>}
 
                 {(localError || uploadError) && <div className="upload-files-message upload-files-message--error" role="alert"><CircleHelp size={16} /><span>{localError || uploadError}</span></div>}
-                {successMessage && <div className="upload-files-message upload-files-message--success" role="status"><Check size={16} /><span>{successMessage}</span></div>}
                 <div className="upload-files-form-footer"><span><Paperclip size={13} /> Files stay attached to this project</span><button type="submit" disabled={!selectedFiles.length || isUploadingFiles}>{isUploadingFiles ? <><LoaderCircle className="upload-files-state__spin" size={15} /> Uploading...</> : <>Upload {selectedFiles.length || "files"} <ArrowRight size={15} /></>}</button></div>
               </form>
             </section>
@@ -316,7 +312,7 @@ export default function UploadFiles() {
           </div>}
           {savedFiles.length ? <ul>{savedFiles.map((file, index) => {
             const isFileActionActive = fileAction?.fileId === file._id;
-            return <li key={file._id || `${file.originalName}-${file.uploadedAt || index}`}><span className="upload-files-saved__icon"><FileTypeIcon fileName={file.originalName || ""} size={18} /></span><span className="upload-files-saved__name"><strong>{file.originalName || "Project file"}</strong><small>{formatDate(file.uploadedAt)} · {file.fileType || "File"}</small></span><span className="upload-files-saved__actions"><button type="button" onClick={() => handleSavedFileAction(file, "view")} disabled={!file._id || Boolean(fileAction)} title="View file" aria-label={`View ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "view" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Eye size={15} />}</button><button type="button" onClick={() => handleSavedFileAction(file, "download")} disabled={!file._id || Boolean(fileAction)} title="Download file" aria-label={`Download ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "download" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Download size={15} />}</button><button type="button" onClick={() => { setFileActionError(""); setPendingDeleteFile(file); }} disabled={!file._id || Boolean(fileAction)} title="Delete file" aria-label={`Delete ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "delete" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Trash2 size={15} />}</button></span></li>;
+            return <li key={file._id || `${file.originalName}-${file.uploadedAt || index}`}><span className="upload-files-saved__icon"><FileTypeIcon fileName={file.originalName || ""} size={18} /></span><span className="upload-files-saved__name"><strong>{file.originalName || "Project file"}</strong><small>{formatDate(file.uploadedAt)} · {file.fileType || "File"}</small></span><span className="upload-files-saved__actions"><button type="button" onClick={() => handleSavedFileAction(file, "view")} disabled={!file._id || Boolean(fileAction)} title="View file" aria-label={`View ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "view" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Eye size={15} />}</button><button type="button" onClick={() => handleSavedFileAction(file, "download")} disabled={!file._id || Boolean(fileAction)} title="Download file" aria-label={`Download ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "download" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Download size={15} />}</button><button type="button" onClick={() => setPendingDeleteFile(file)} disabled={!file._id || Boolean(fileAction)} title="Delete file" aria-label={`Delete ${file.originalName || "project file"}`}>{isFileActionActive && fileAction.mode === "delete" ? <LoaderCircle className="upload-files-state__spin" size={15} /> : <Trash2 size={15} />}</button></span></li>;
           })}</ul> : <p className="upload-files-saved__empty">Files you upload will appear here.</p>}
         </section>}
 
